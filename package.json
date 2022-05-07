@@ -7,8 +7,10 @@
 		"vscode": "^1.66.0"
 	},
 	"categories": [
+		"Snippets",
 		"Other"
 	],
+	"keywords": ["c++", "cpp", "guttih", "tern" ],
 	"activationEvents": [
         "onCommand:gepper.helloWorld"
 	],
@@ -18,6 +20,12 @@
 			{
 				"command": "gepper.helloWorld",
 				"title": "Hello World"
+			}
+		],
+		"snippets": [
+			{
+				"language": "cpp",
+				"path": "./snippets/class.json"
 			}
 		]
 	},
