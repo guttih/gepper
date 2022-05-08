@@ -3,7 +3,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { Maker } from "./maker";
+import { ClassCreator } from "./classCreator";
+import { TokenWorker } from "./tokenWorker";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "gepper" is now active!');
     // The command has been defined in the package.json file
-    // Now provide the implementation of the comman d with registerCommand
+    // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
     let disposable = vscode.commands.registerCommand(
         "gepper.helloWorld",
@@ -24,18 +25,27 @@ export function activate(context: vscode.ExtensionContext) {
     );
     let fnCreateClass = vscode.commands.registerCommand(
         "gepper.createClass",
-        () => {
-            // The code you place here will be executed every time your command is executed
-            // Display a message box to the user
-            let dir = vscode.workspace
-                .getConfiguration()
-                .get<string>("cpp.gepper.classPath");
-            if (!dir ) {
-                var folders = vscode.workspace.workspaceFolders;
-                dir = folders?.[0]?.uri?.fsPath;
+        async () => {
+            let className: string | undefined =
+                await vscode.window.showInputBox({
+                    title: "What is the name of your class",
+                    placeHolder: "ClassName",
+                    prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
+                });
+            const tokens = new TokenWorker();
+            if (tokens.isOnlySpaces(className)) {
+                return;
             }
-            let maker = new Maker(dir);
-            vscode.window.showInformationMessage("Class created");
+            let maker = new ClassCreator(String(className));
+            if (maker.saveClassFiles()) {
+                vscode.window.showInformationMessage(
+                    `Class ${className} created!`
+                );
+            } else {
+                vscode.window.showErrorMessage(
+                    `Unable to create ${className}!`
+                );
+            }
         }
     );
 
