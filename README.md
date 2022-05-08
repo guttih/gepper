@@ -28,7 +28,7 @@ Added features X, Y, and Z.
 
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
-| #classvar | Add local class variable | Add class variable with a getter and setter functions |
+| #classvar | Add local class variable | Add class variable with getter and setter |
 
 
 [Top](#gepper-readme)

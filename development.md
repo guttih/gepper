@@ -33,11 +33,11 @@ In this example we use 1.0.0 as the example version number, you will need to bum
 2. Export snippet list to markdown 
   - by running 
     ```
-    node ./src/test/preparePublish.js
+    node ./src/tools/preparePublish.js
     ```
   - or if you want to want to increase the version number by one, run with parameter *-bump* like so
     ```
-    node ./src/test/preparePublish.js -bump
+    node ./src/tools/preparePublish.js -bump
     ```
     which will increment three version numbers, one in file [package.json] and two [package-lock.json].
 3. Add to Release notes for this version in *CHANGELOG.md*

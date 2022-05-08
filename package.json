@@ -12,7 +12,8 @@
 	],
 	"keywords": ["c++", "cpp", "guttih", "tern" ],
 	"activationEvents": [
-        "onCommand:gepper.helloWorld"
+        "onCommand:gepper.helloWorld",
+		"onCommand:gepper.createClass"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -20,6 +21,10 @@
 			{
 				"command": "gepper.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "gepper.createClass",
+				"title": "Create a new C++ Class"
 			}
 		],
 		"snippets": [
@@ -40,6 +45,49 @@
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
+	"languages": [
+		{
+			"id": "cpp",
+			"extensions": [
+				".cpp",
+				".hpp"
+			]
+		}
+	],
+	"configuration": [
+		{
+			"title": "Gepper C++ helper",
+			"properties": {
+				"cpp.gepper.classPath": {
+					"type": ["string","null"],
+					"default": null,
+					"description": "Where the class will be created"
+				},
+				"cpp.gepper.headerFileTemplate": {
+					"type": "string",
+					"editPresentation": "multilineText",
+					"default": "#ifndef {{*CLASSNAMEUPPER*}}_H\n#define {{*CLASSNAMEUPPER*}}_H\n\n#pragma once\n\nclass {{*CLASSNAME*}}\n{\npublic:\n    {{*CLASSNAME*}}();\n    ~{{*CLASSNAME*}}();\n\nprivate:\n\n};\n\n#endif",
+					"description": "Content of your created header file. \nAvailable commands are:\n{{*CLASSNAME*}} - entered classname.\n{{*CLASSNAMEUPPER*}} - entered classname in upper-case letters.\n{{*CLASSNAMELOWER*}} - entered classname in lower-case letters.\n{{*CLASSNAMELOWER*}} - entered classname in lower-case letters.\n{{*CLASSNAMECAPI*}} - default classname with capitalized first letter.\n{{*HEADERFILENAME*}} - default headerfilename as entered in the settings. \n{{*SOURCEFILENAME*}} - default sourcefilename as entered in the settings."
+				},
+				"cpp.gepper.sourceFileTemplate": {
+					"type": "string",
+					"editPresentation": "multilineText",
+					"default": "#include \"{{*HEADERFILENAME*}}\"\n\n{{*CLASSNAME*}}::{{*CLASSNAME*}}()\n{\n\n}\n\n{{*CLASSNAME*}}::~{{*CLASSNAME*}}()\n{\n\n}",
+					"description": "Content of your created source file. \nAvailable commands are:\n{{*CLASSNAME*}} - entered classname.\n{{*CLASSNAMEUPPER*}} - entered classname in upper-case letters.\n{{*CLASSNAMELOWER*}} - entered classname in lower-case letters.\n{{*CLASSNAMECAPI*}} - default classname with capitalized first letter.\n{{*HEADERFILENAME*}} - default headerfilename as entered in the settings. \n{{*SOURCEFILENAME*}} - default sourcefilename as entered in the settings."
+				},
+				"cpp.gepper.sourceFileNameScheme": {
+					"type": "string",
+					"default": "{{*CLASSNAME*}}.cpp",
+					"description": "Name of your source file. \nAvailable commands are:\n{{*CLASSNAME*}} - entered classname.\n{{*CLASSNAMEUPPER*}} - entered classname in upper-case letters.\n{{*CLASSNAMELOWER*}} - entered classname in lower-case letters."
+				},
+				"cpp.gepper.headerFileNameScheme": {
+					"type": "string",
+					"default": "{{*CLASSNAME*}}.h",
+					"description": "Name of your header file. \nAvailable commands are:\n{{*CLASSNAME*}} - entered classname.\n{{*CLASSNAMEUPPER*}} - entered classname in upper-case letters.\n{{*CLASSNAMELOWER*}} - entered classname in lower-case letters."
+				}
+			}
+		}
+	],
 	"devDependencies": {
 		"@types/vscode": "^1.66.0",
 		"@types/glob": "^7.2.0",

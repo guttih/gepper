@@ -8,7 +8,7 @@ let slash='/';
 if (__dirname.indexOf('\\')>0) {
     slash='\\';
 }
-let workspaceDir = __dirname.replace(`${slash}src${slash}test`, "");
+let workspaceDir = __dirname.replace(`${slash}src${slash}tools`, "");
 let snippetDirs = workspaceDir+`${slash}snippets`;
 let mdFile=workspaceDir+`${slash}README.md`;
 
