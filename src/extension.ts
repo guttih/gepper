@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ClassCreator } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
+import { DiskFunctions } from "./diskFunctions";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -37,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
             let maker = new ClassCreator(String(className));
+            
             if (maker.saveClassFiles()) {
                 vscode.window.showInformationMessage(
                     `Class ${className} created!`

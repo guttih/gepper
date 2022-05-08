@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { DiskFunctions } from "./diskFunctions";
 
 export class ClassCreator {
     #_name: string = "";
@@ -27,17 +28,23 @@ export class ClassCreator {
     }
 
     /**
+     * @param includePath if true a directory path will be added in front of the file name rendering it a fully qualified file path.
      * @returns name of the header file (*.h)
      */
-    getHeaderFileName() {
-        return this.#_fileNameHeader;
+    getHeaderFileName(includePath: Boolean = false) {
+        return includePath
+            ? `${this.#_dir}/${this.#_fileNameHeader}`
+            : this.#_fileNameHeader;
     }
 
     /**
+     * @param includePath if true a directory path will be added in front of the file name rendering it a fully qualified file path.
      * @returns name of the implementation file (*.cpp)
      */
-    getImplementationFileName() {
-        return this.#_fileNameImplementation;
+    getImplementationFileName(includePath: Boolean = false) {
+        return includePath
+            ? `${this.#_dir}/${this.#_fileNameImplementation}`
+            : this.#_fileNameImplementation;
     }
     /**
      * Saves the class in two files.
@@ -64,7 +71,7 @@ export class ClassCreator {
         return pattern.test(name);
     }
     /**
-     * Set name of the class and if successful, names of 
+     * Set name of the class and if successful, names of
      * header file and implementation file will also be set.
      * @param className New class name
      * @returns true if success
@@ -77,7 +84,6 @@ export class ClassCreator {
         this.#_fileNameHeader = `${this.#_name}.h`;
         this.#_fileNameImplementation = `${this.#_name}.cpp`;
         return true;
-        
     }
 
     #init(className: string, dir?: string) {
@@ -89,6 +95,28 @@ export class ClassCreator {
             vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
 
         this.#setName(className);
+    }
+
+    /**
+     * Checks if header file exists.
+     * @returns true if it exists, false if not
+     */
+    headerFileExists() {
+        return DiskFunctions.fileExists(this.getHeaderFileName(true));
+    }
+    /**
+     * Checks if implementation file exists.
+     * @returns true if it exists, false if not
+     */
+
+    implementationFileExists() {
+        return DiskFunctions.fileExists(this.getImplementationFileName(true));
+    }
+
+    pathExists() {
+        return this.getDir()
+            ? DiskFunctions.dirExists(String(this.getDir()))
+            : false;
     }
 
     /**
