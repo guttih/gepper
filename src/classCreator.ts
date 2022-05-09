@@ -44,18 +44,10 @@ export class ClassCreator {
     executeTokenFunction(tokenFunc: FunctionTokenName, content: string): string {
         switch (tokenFunc) {
             case FunctionTokenName.className:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    this.getName()
-                );
+                content = TokenWorker.replaceAll(content, TokenWorker.getFunctionalTokenInfo(tokenFunc).token, this.getName());
                 break;
             case FunctionTokenName.classNameUpperCase:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toUpper(this.getName())
-                );
+                content = TokenWorker.replaceAll(content, TokenWorker.getFunctionalTokenInfo(tokenFunc).token, TokenWorker.toUpper(this.getName()));
                 break;
             case FunctionTokenName.classNameLowerCaseUnder:
                 content = TokenWorker.replaceAll(
@@ -80,25 +72,13 @@ export class ClassCreator {
                 );
                 break;
             case FunctionTokenName.classHeaderFileName:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    this.getHeaderFileName()
-                );
+                content = TokenWorker.replaceAll(content, TokenWorker.getFunctionalTokenInfo(tokenFunc).token, this.getHeaderFileName());
                 break;
             case FunctionTokenName.classImplementationFileName:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    this.getImplementationFileName()
-                );
+                content = TokenWorker.replaceAll(content, TokenWorker.getFunctionalTokenInfo(tokenFunc).token, this.getImplementationFileName());
                 break;
             case FunctionTokenName.classNameLowerCase:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toLower(this.getName())
-                );
+                content = TokenWorker.replaceAll(content, TokenWorker.getFunctionalTokenInfo(tokenFunc).token, TokenWorker.toLower(this.getName()));
                 break;
         }
         return content;
@@ -193,9 +173,7 @@ export class ClassCreator {
 
     #init(className: string, dir?: string) {
         this.#_dir =
-            dir ||
-            vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") ||
-            vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+            dir || vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") || vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
 
         this.#setName(className);
     }
@@ -224,7 +202,6 @@ export class ClassCreator {
      * Check if the class object is in valid state or not.
      */
     isValid() {
-
         return ClassCreator.isClassNameValid(this.getName()) && this.#_dir && this.#_dir.length > 0;
     }
 

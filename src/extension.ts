@@ -27,11 +27,11 @@ export function activate(context: vscode.ExtensionContext) {
             placeHolder: "ClassName",
             prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
         });
-        
+
         if (TokenWorker.isOnlySpaces(className)) {
             return;
         }
-        
+
         const maker = new ClassCreator(String(className));
         if (!maker.saveClassFiles()) {
             vscode.window.showErrorMessage(`Unable to create Class "${className}"!`);

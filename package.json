@@ -1,6 +1,6 @@
 {
     "name": "gepper",
-    "displayName": "gepper",
+    "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
     "version": "0.0.1",
@@ -39,7 +39,7 @@
             },
             {
                 "command": "gepper.createClass",
-                "title": "XCreate a new C++ Class"
+                "title": "Create a new C++ Class"
             }
         ],
         "snippets": [
@@ -81,23 +81,23 @@
                         "type": "string",
                         "editPresentation": "multilineText",
                         "default": "#ifndef {{__CLASS_NAME_UPPER__}}_H\n#define {{__CLASS_NAME_UPPER__}}_H\n\n#pragma once\n\nclass {{__CLASS_NAME__}}\n{\npublic:\n    {{__CLASS_NAME__}}();\n    ~{{__CLASS_NAME__}}();\n\nprivate:\n\n};\n\n#endif",
-                        "description": "Content of your created header file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_CAPITALIZE__}} - default classname with capitalized first letter.\n{{__HEADER_FILE_NAME__}} - default headerfilename as entered in the settings. \n{{__SOURCE_FILE_NAME__}} - default sourcefilename as entered in the settings.\n{{__HEADER_FILE_NAME_LOWER__}} - headerfilename as lower case and capitalized will be lowered and hyphenated\n{{__SOURCE_FILE_NAME_LOWER__}} - sourcefilename as lower case and capitalized will be lowered and hyphenated"
+                        "description": "Content of your created header file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n{{__HEADER_FILE_NAME__}}       - default header file name as entered in the settings.\n{{__SOURCE_FILE_NAME__}}       - default source file name as entered in the settings.\n"
                     },
                     "cpp.gepper.classImplementationTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
                         "default": "#include \"{{__HEADER_FILE_NAME__}}\"\n\n{{__CLASS_NAME__}}::{{__CLASS_NAME__}}()\n{\n\n}\n\n{{__CLASS_NAME__}}::~{{__CLASS_NAME__}}()\n{\n\n}",
-                        "description": "Content of your created source file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_CAPITALIZE__}} - default classname with capitalized first letter.\n{{__HEADER_FILE_NAME__}} - default headerfilename as entered in the settings. \n{{__SOURCE_FILE_NAME__}} - default sourcefilename as entered in the settings.\n{{__HEADER_FILE_NAME_LOWER__}} - headerfilename as lower case and capitalized will be lowered and hyphenated\n{{__SOURCE_FILE_NAME_LOWER__}} - sourcefilename as lower case and capitalized will be lowered and hyphenated"
+                        "description": "Content of your created source file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n{{__HEADER_FILE_NAME__}}       - default header file name as entered in the settings.\n{{__SOURCE_FILE_NAME__}}       - default source file name as entered in the settings.\n"
                     },
                     "cpp.gepper.classHeaderFileNameScheme": {
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.h",
-                        "description": "Name of your header file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters."
+                        "description": "Name of your header file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n"
                     },
                     "cpp.gepper.classImplementationFileNameScheme": {
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.cpp",
-                        "description": "Name of your source file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters."
+                        "description": "Name of your source file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n"
                     }
                 }
             }

@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as fs from "fs";
 import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
 
 export interface TokenDetails {
@@ -9,10 +10,91 @@ export interface TokenDetails {
 }
 
 export class Maintenance {
+    static savePackageJsonToDisk(packageJson: any) {
+        let newContent = JSON.stringify(packageJson, null, 4);
+        let fileName = Maintenance.getPackageJsonFullFileName(); /*  */
+        try {
+            fs.writeFileSync(fileName, newContent);
+        } catch (err) {
+            console.error(err);
+            console.log("Unable to write to file package.json");
+            return null;
+        }
+    }
+    static updateAllTokenPropertyDescriptions(packageJson: any): Boolean {
+        let allTokens = TokenWorker.getFunctionalTokens();
+        let fileTokens = allTokens.filter(
+            (e) => e.value !== FunctionTokenName.classHeaderFileName && e.value !== FunctionTokenName.classImplementationFileName
+        );
+
+        let templateFunctionDescription: string = Maintenance.makeAvailableCommandDescription(Maintenance.getDetailedInfo(allTokens, true));
+        let fileFunctionDescription: string = Maintenance.makeAvailableCommandDescription(Maintenance.getDetailedInfo(fileTokens, true));
+
+        if (
+            !Maintenance.updateJsonPropertyDescription(
+                packageJson,
+                "cpp.gepper.classHeaderTemplate",
+                Maintenance.makeTokenFunctionDescription("Content of your created header file. ", templateFunctionDescription)
+            )
+        ) {
+            return false;
+        }
+        if (
+            !Maintenance.updateJsonPropertyDescription(
+                packageJson,
+                "cpp.gepper.classImplementationTemplate",
+                Maintenance.makeTokenFunctionDescription("Content of your created source file. ", templateFunctionDescription)
+            )
+        ) {
+            return false;
+        }
+        if (
+            !Maintenance.updateJsonPropertyDescription(
+                packageJson,
+                "cpp.gepper.classHeaderFileNameScheme",
+                Maintenance.makeTokenFunctionDescription("Name of your header file. ", fileFunctionDescription)
+            )
+        ) {
+            return false;
+        }
+        if (
+            !Maintenance.updateJsonPropertyDescription(
+                packageJson,
+                "cpp.gepper.classImplementationFileNameScheme",
+                Maintenance.makeTokenFunctionDescription("Name of your source file. ", fileFunctionDescription)
+            )
+        ) {
+            return false;
+        }
+
+        return true;
+
+        // console.log("---   fileFunctionDescription   ----");
+        // console.log(fileFunctionDescription);
+        // console.log("------------------------------------");
+        // console.log("-------- templateFunctions ---------");
+        // console.log(templateFunctionDescription);
+        // console.log("------------------------------------");
+        // console.log(JSON.stringify(packageJson, null, 4));
+
+        // Maintenance.makeTokenFunctionDescription("Content of your created header file. ", templateFunctionDescription);
+        // Maintenance.makeTokenFunctionDescription("Content of your created source file", templateFunctionDescription);
+        // Maintenance.makeTokenFunctionDescription("Name of your header file", fileFunctionDescription);
+        // Maintenance.makeTokenFunctionDescription("Name of your source file", fileFunctionDescription);
+    }
+    static updateJsonPropertyDescription(packageJson: any, propertyName: string, newDescription: string): Boolean {
+        // if (packageJson?.contributes?.configuration?.length > 0 && packageJson.contributes.configuration["0"].title === packageJson.displayName) {
+        if (packageJson?.contributes?.configuration["0"]?.properties[propertyName]?.description) {
+            packageJson.contributes.configuration["0"].properties[propertyName].description = newDescription;
+            return true;
+        }
+
+        return false;
+    }
     static makeTokenFunctionDescription(title: string, trokenFunctionsDescription: string) {
         return `${title}\n${trokenFunctionsDescription}\n`;
     }
-    
+
     static makeAvailableCommandDescription(details: TokenDetails[]): string {
         let maxLength = 0;
         details.forEach((e) => {
@@ -65,7 +147,7 @@ export class Maintenance {
         }
         return `${prefix} - ${message}${postfix}`;
     }
-    
+
     static getDetailedInfo(infos: TokenInfo[], alignDescription: Boolean = false): TokenDetails[] {
         let i = 0;
         let maxLength = 0;
@@ -80,16 +162,17 @@ export class Maintenance {
         arr = arr.map((obj) => ({
             ...obj,
             description: Maintenance.getTokenDescription(obj, maxLength),
-        } ));
+        }));
         return arr as TokenDetails[];
     }
-    static getRootDir(){
+    static getRootDir() {
         //tests are run in ./out folder
-        return path.resolve(__dirname, '..');
+        return path.resolve(__dirname, "..");
     }
-    static getPackageJson(){
-       const dir = Maintenance.getRootDir();
-        const fileName = path.join(dir, "package.json");
-        return require(fileName);
+    static getPackageJsonFullFileName() {
+        return path.join(Maintenance.getRootDir(), "package.json");
+    }
+    static getPackageJson() {
+        return require(Maintenance.getPackageJsonFullFileName());
     }
 }
