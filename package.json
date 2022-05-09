@@ -39,7 +39,7 @@
             },
             {
                 "command": "gepper.createClass",
-                "title": "Create a new C++ Class"
+                "title": "XCreate a new C++ Class"
             }
         ],
         "snippets": [

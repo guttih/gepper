@@ -39,10 +39,7 @@ export class ClassCreator {
         return content;
     }
 
-    executeTokenFunction(
-        tokenFunc: FunctionTokenName,
-        content: string
-    ): string {
+    executeTokenFunction(tokenFunc: FunctionTokenName, content: string): string {
         switch (tokenFunc) {
             case FunctionTokenName.className:
                 content = TokenWorker.replaceAll(
@@ -155,9 +152,7 @@ export class ClassCreator {
      * @returns name of the header file (*.h)
      */
     getHeaderFileName(includePath: Boolean = false) {
-        return includePath
-            ? `${this.#_dir}/${this.#_fileNameHeader}`
-            : this.#_fileNameHeader;
+        return includePath ? `${this.#_dir}/${this.#_fileNameHeader}` : this.#_fileNameHeader;
     }
 
     /**
@@ -165,9 +160,7 @@ export class ClassCreator {
      * @returns name of the implementation file (*.cpp)
      */
     getImplementationFileName(includePath: Boolean = false) {
-        return includePath
-            ? `${this.#_dir}/${this.#_fileNameImplementation}`
-            : this.#_fileNameImplementation;
+        return includePath ? `${this.#_dir}/${this.#_fileNameImplementation}` : this.#_fileNameImplementation;
     }
     /**
      * Saves the class in two files.
@@ -177,8 +170,17 @@ export class ClassCreator {
         if (!this.isValid()) {
             return false;
         }
+        const headerContent = this.createHeaderContent();
+        const sourceContent = this.createImplementationContent();
+        const dir = this.getDir();
+        if (dir === undefined || headerContent === undefined || sourceContent === undefined) {
+            return false;
+        }
+        if (!DiskFunctions.writeToFile(path.join(dir, this.getHeaderFileName()), headerContent)) {
+            return false;
+        }
 
-        return false;
+        return DiskFunctions.writeToFile(path.join(dir, this.getImplementationFileName() as string), sourceContent);
     }
 
     /**
@@ -207,28 +209,11 @@ export class ClassCreator {
         this.#_fileNameHeader = `${this.#_name}.h`;
         this.#_fileNameImplementation = `${this.#_name}.cpp`;
 
-        // let tokenArray = TokenWorker.getFunctionalTokens();
-
         let template = this.getRawHeaderFileName();
-        this.#_fileNameHeader = template
-            ? this.replaceFunctionalTokens(template)
-            : `${this.#_name}.h`;
+        this.#_fileNameHeader = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.h`;
 
         template = this.getRawImplementationFileName();
-        this.#_fileNameImplementation = template
-            ? this.replaceFunctionalTokens(template)
-            : `${this.#_name}.cpp`;
-
-        // this.replaceFunctionalTokens(template);
-        // if (template !== undefined) {
-        //     let relevantTokens = tokenArray.filter((element) => {
-        //         return template.indexOf(element.token) > -1;
-        //     });
-        //     relevantTokens.forEach((e) => {
-        //         console.log(e.token);
-        //         template = this.executeTokenFunction(e.value, template);
-        //     });
-        // }
+        this.#_fileNameImplementation = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.cpp`;
 
         return true;
     }
@@ -236,9 +221,7 @@ export class ClassCreator {
     #init(className: string, dir?: string) {
         this.#_dir =
             dir ||
-            vscode.workspace
-                .getConfiguration()
-                .get<string>("cpp.gepper.classPath") ||
+            vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") ||
             vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
 
         this.#setName(className);
@@ -261,9 +244,7 @@ export class ClassCreator {
     }
 
     pathExists() {
-        return this.getDir()
-            ? DiskFunctions.dirExists(String(this.getDir()))
-            : false;
+        return this.getDir() ? DiskFunctions.dirExists(String(this.getDir())) : false;
     }
 
     /**
@@ -284,9 +265,7 @@ export class ClassCreator {
      * @returns the un-modified template from the package.json file.
      */
     getRawHeaderFileName(): string | undefined {
-        return vscode.workspace
-            .getConfiguration()
-            .get<string>("cpp.gepper.classHeaderFileNameScheme");
+        return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classHeaderFileNameScheme");
     }
 
     /**
@@ -294,8 +273,6 @@ export class ClassCreator {
      * @returns the un-modified template from the package.json file.
      */
     getRawImplementationFileName(): string | undefined {
-        return vscode.workspace
-            .getConfiguration()
-            .get<string>("cpp.gepper.classImplementationFileNameScheme");
+        return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classImplementationFileNameScheme");
     }
 }
