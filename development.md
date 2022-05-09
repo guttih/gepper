@@ -60,7 +60,7 @@ In this example we use 1.0.0 as the example version number, you will need to bum
     ```
     code --install-extension gepper-1.0.0.vsix
     ```
-    Distribute the file `sheller-1.0.0.vsix`
+    Distribute the file `gepper-1.0.0.vsix`
     ```
     vsce publish
     ```
