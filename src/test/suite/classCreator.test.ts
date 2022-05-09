@@ -109,14 +109,20 @@ suite("ClassCreator", () => {
         const name = "KlassiMan";
         const path = "/path/to/project";
 
-        test("Get file names", () => {
+        test("Get file.h file name", () => {
             const creator = new ClassCreator(name, path);
             assert.strictEqual(creator.getHeaderFileName(false), `${name}.h`);
+        });
+        test("Get file.cpp file name", () => {
+            const creator = new ClassCreator(name, path);
             assert.strictEqual(creator.getImplementationFileName(false), `${name}.cpp`);
         });
-        test("Get file names with path", () => {
+        test("Get file.h names with path", () => {
             const creator = new ClassCreator(name, path);
             assert.strictEqual(creator.getHeaderFileName(true), `${path}/${name}.h`);
+        });
+        test("Get file.cpp names with path", () => {
+            const creator = new ClassCreator(name, path);
             assert.strictEqual(creator.getImplementationFileName(true), `${path}/KlassiMan.cpp`);
         });
     });

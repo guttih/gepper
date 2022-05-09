@@ -5,6 +5,8 @@ import { DiskFunctions } from "./diskFunctions";
 import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
 
 export class ClassCreator {
+    #_name: string = "";
+    #_dir?: string;
     /**
      * Loads the class header template and replaces all stored function tokens.
      * @returns a string which can be saved to a new class header file (.h)
@@ -91,43 +93,16 @@ export class ClassCreator {
                     this.getImplementationFileName()
                 );
                 break;
-
-            case FunctionTokenName.classHeaderFileNameLower:
+            case FunctionTokenName.classNameLowerCase:
                 content = TokenWorker.replaceAll(
                     content,
                     TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toLower(this.getHeaderFileName(), "-")
-                );
-                break;
-            case FunctionTokenName.classImplementationFileNameLower:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toLower(this.getImplementationFileName(), "-")
-                );
-                break;
-            case FunctionTokenName.classHeaderFileNameLowerUnder:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toLower(this.getHeaderFileName(), "_")
-                );
-                break;
-            case FunctionTokenName.classImplementationFileNameLowerUnder:
-                content = TokenWorker.replaceAll(
-                    content,
-                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
-                    TokenWorker.toLower(this.getImplementationFileName(), "_")
+                    TokenWorker.toLower(this.getName())
                 );
                 break;
         }
         return content;
     }
-
-    #_name: string = "";
-    #_fileNameHeader: string = "";
-    #_fileNameImplementation: string = "";
-    #_dir?: string;
 
     /**
      * @param className Name of the class
@@ -152,7 +127,10 @@ export class ClassCreator {
      * @returns name of the header file (*.h)
      */
     getHeaderFileName(includePath: Boolean = false) {
-        return includePath ? `${this.#_dir}/${this.#_fileNameHeader}` : this.#_fileNameHeader;
+        let template = this.getRawHeaderFileName();
+        let fileNameHeader = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.h`;
+
+        return includePath ? `${this.#_dir}/${fileNameHeader}` : fileNameHeader;
     }
 
     /**
@@ -160,7 +138,10 @@ export class ClassCreator {
      * @returns name of the implementation file (*.cpp)
      */
     getImplementationFileName(includePath: Boolean = false) {
-        return includePath ? `${this.#_dir}/${this.#_fileNameImplementation}` : this.#_fileNameImplementation;
+        let template = this.getRawImplementationFileName();
+        let fileNameHeader = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.cpp`;
+
+        return includePath ? `${this.#_dir}/${fileNameHeader}` : fileNameHeader;
     }
     /**
      * Saves the class in two files.
@@ -176,11 +157,11 @@ export class ClassCreator {
         if (dir === undefined || headerContent === undefined || sourceContent === undefined) {
             return false;
         }
-        if (!DiskFunctions.writeToFile(path.join(dir, this.getHeaderFileName()), headerContent)) {
+        if (!DiskFunctions.writeToFile(this.getHeaderFileName(true), headerContent)) {
             return false;
         }
 
-        return DiskFunctions.writeToFile(path.join(dir, this.getImplementationFileName() as string), sourceContent);
+        return DiskFunctions.writeToFile(this.getImplementationFileName(true), sourceContent);
     }
 
     /**
@@ -206,14 +187,6 @@ export class ClassCreator {
             return false;
         }
         this.#_name = className;
-        this.#_fileNameHeader = `${this.#_name}.h`;
-        this.#_fileNameImplementation = `${this.#_name}.cpp`;
-
-        let template = this.getRawHeaderFileName();
-        this.#_fileNameHeader = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.h`;
-
-        template = this.getRawImplementationFileName();
-        this.#_fileNameImplementation = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.cpp`;
 
         return true;
     }
@@ -251,13 +224,8 @@ export class ClassCreator {
      * Check if the class object is in valid state or not.
      */
     isValid() {
-        return (
-            this.#_name.length > 0 &&
-            this.#_fileNameHeader.length > 2 &&
-            this.#_fileNameImplementation.length > 4 &&
-            this.#_dir &&
-            this.#_dir.length > 0
-        );
+
+        return ClassCreator.isClassNameValid(this.getName()) && this.#_dir && this.#_dir.length > 0;
     }
 
     /**

@@ -19,10 +19,6 @@ export enum FunctionTokenName {
     classNameCapitalizeFirst = "CLASS_NAME_CAPITALIZE",
     classHeaderFileName = "HEADER_FILE_NAME",
     classImplementationFileName = "SOURCE_FILE_NAME",
-    classHeaderFileNameLower = "HEADER_FILE_NAME_LOWER",
-    classImplementationFileNameLower = "SOURCE_FILE_NAME_LOWER",
-    classHeaderFileNameLowerUnder = "HEADER_FILE_NAME_LOWER_UNDER",
-    classImplementationFileNameLowerUnder = "SOURCE_FILE_NAME_LOWER_UNDER",
 }
 
 export class TokenWorker {

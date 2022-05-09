@@ -16,39 +16,27 @@ export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand(
-        "gepper.helloWorld",
-        () => {
-            // The code you place here will be executed every time your command is executed
-            // Display a message box to the user
-            vscode.window.showInformationMessage("Hello World from gepper!");
+    let disposable = vscode.commands.registerCommand("gepper.helloWorld", () => {
+        // The code you place here will be executed every time your command is executed
+        // Display a message box to the user
+        vscode.window.showInformationMessage("Hello World from gepper!");
+    });
+    let fnCreateClass = vscode.commands.registerCommand("gepper.createClass", async () => {
+        let className: string | undefined = await vscode.window.showInputBox({
+            title: "What is the name of your class",
+            placeHolder: "ClassName",
+            prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
+        });
+        
+        if (TokenWorker.isOnlySpaces(className)) {
+            return;
         }
-    );
-    let fnCreateClass = vscode.commands.registerCommand(
-        "gepper.createClass",
-        async () => {
-            let className: string | undefined =
-                await vscode.window.showInputBox({
-                    title: "What is the name of your class",
-                    placeHolder: "ClassName",
-                    prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
-                });
-            // if (TokenWorker.isOnlySpaces(className)) {
-            //     return;
-            // }
-            let maker = await new ClassCreator(String(className));
-            
-            if (maker.saveClassFiles()) {
-                vscode.window.showInformationMessage(
-                    `Class ${className} created!`
-                );
-            } else {
-                vscode.window.showErrorMessage(
-                    `Unable to create ${className}!`
-                );
-            }
+        
+        const maker = new ClassCreator(String(className));
+        if (!maker.saveClassFiles()) {
+            vscode.window.showErrorMessage(`Unable to create Class "${className}"!`);
         }
-    );
+    });
 
     context.subscriptions.push(fnCreateClass, disposable);
     vscode.window.showInformationMessage("Gepper is loaded");
