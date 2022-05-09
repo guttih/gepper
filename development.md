@@ -27,6 +27,13 @@ Documentation to look at when developing extensions
 
 ## Deployment
 ### Creating the package
+
+Before any publish make sure all test run correctly with command
+```
+node ./out/test/runTest.js
+
+```
+
 In this example we use 1.0.0 as the example version number, you will need to bump it every time you release.
 
 1. cd into the root dir of this repo

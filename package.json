@@ -75,29 +75,29 @@
                             "null"
                         ],
                         "default": null,
-                        "description": "Where the class will be created"
+                        "description": "Where the class will be created, relative to the project directory."
                     },
-                    "cpp.gepper.headerFileTemplate": {
+                    "cpp.gepper.classHeaderTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
-                        "default": "#ifndef {{__CLASSNAMEUPPER__}}_H\n#define {{__CLASSNAMEUPPER__}}_H\n\n#pragma once\n\nclass {{__CLASSNAME__}}\n{\npublic:\n    {{__CLASSNAME__}}();\n    ~{{__CLASSNAME__}}();\n\nprivate:\n\n};\n\n#endif",
-                        "description": "Content of your created header file. \nAvailable commands are:\n{{__CLASSNAME__}} - entered classname.\n{{__CLASSNAMEUPPER__}} - entered classname in upper-case letters.\n{{__CLASSNAMELOWER__}} - entered classname in lower-case letters.\n{{__CLASSNAMELOWER__}} - entered classname in lower-case letters.\n{{__CLASSNAMECAPI__}} - default classname with capitalized first letter.\n{{__HEADERFILENAME__}} - default headerfilename as entered in the settings. \n{{__SOURCEFILENAME__}} - default sourcefilename as entered in the settings."
+                        "default": "#ifndef {{__CLASS_NAME_UPPER__}}_H\n#define {{__CLASS_NAME_UPPER__}}_H\n\n#pragma once\n\nclass {{__CLASS_NAME__}}\n{\npublic:\n    {{__CLASS_NAME__}}();\n    ~{{__CLASS_NAME__}}();\n\nprivate:\n\n};\n\n#endif",
+                        "description": "Content of your created header file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_CAPITALIZE__}} - default classname with capitalized first letter.\n{{__HEADER_FILE_NAME__}} - default headerfilename as entered in the settings. \n{{__SOURCE_FILE_NAME__}} - default sourcefilename as entered in the settings.\n{{__HEADER_FILE_NAME_LOWER__}} - headerfilename as lower case and capitalized will be lowered and hyphenated\n{{__SOURCE_FILE_NAME_LOWER__}} - sourcefilename as lower case and capitalized will be lowered and hyphenated"
                     },
-                    "cpp.gepper.sourceFileTemplate": {
+                    "cpp.gepper.classImplementationTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
-                        "default": "#include \"{{__HEADERFILENAME__}}\"\n\n{{__CLASSNAME__}}::{{__CLASSNAME__}}()\n{\n\n}\n\n{{__CLASSNAME__}}::~{{__CLASSNAME__}}()\n{\n\n}",
-                        "description": "Content of your created source file. \nAvailable commands are:\n{{__CLASSNAME__}} - entered classname.\n{{__CLASSNAMEUPPER__}} - entered classname in upper-case letters.\n{{__CLASSNAMELOWER__}} - entered classname in lower-case letters.\n{{__CLASSNAMECAPI__}} - default classname with capitalized first letter.\n{{__HEADERFILENAME__}} - default headerfilename as entered in the settings. \n{{__SOURCEFILENAME__}} - default sourcefilename as entered in the settings."
+                        "default": "#include \"{{__HEADER_FILE_NAME__}}\"\n\n{{__CLASS_NAME__}}::{{__CLASS_NAME__}}()\n{\n\n}\n\n{{__CLASS_NAME__}}::~{{__CLASS_NAME__}}()\n{\n\n}",
+                        "description": "Content of your created source file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters.\n{{__CLASS_NAME_CAPITALIZE__}} - default classname with capitalized first letter.\n{{__HEADER_FILE_NAME__}} - default headerfilename as entered in the settings. \n{{__SOURCE_FILE_NAME__}} - default sourcefilename as entered in the settings.\n{{__HEADER_FILE_NAME_LOWER__}} - headerfilename as lower case and capitalized will be lowered and hyphenated\n{{__SOURCE_FILE_NAME_LOWER__}} - sourcefilename as lower case and capitalized will be lowered and hyphenated"
                     },
-                    "cpp.gepper.sourceFileNameScheme": {
+                    "cpp.gepper.classHeaderFileNameScheme": {
                         "type": "string",
-                        "default": "{{__CLASSNAME__}}.cpp",
-                        "description": "Name of your source file. \nAvailable commands are:\n{{__CLASSNAME__}} - entered classname.\n{{__CLASSNAMEUPPER__}} - entered classname in upper-case letters.\n{{__CLASSNAMELOWER__}} - entered classname in lower-case letters."
+                        "default": "{{__CLASS_NAME__}}.h",
+                        "description": "Name of your header file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters."
                     },
-                    "cpp.gepper.headerFileNameScheme": {
+                    "cpp.gepper.classImplementationFileNameScheme": {
                         "type": "string",
-                        "default": "{{__CLASSNAME__}}.h",
-                        "description": "Name of your header file. \nAvailable commands are:\n{{__CLASSNAME__}} - entered classname.\n{{__CLASSNAMEUPPER__}} - entered classname in upper-case letters.\n{{__CLASSNAMELOWER__}} - entered classname in lower-case letters."
+                        "default": "{{__CLASS_NAME__}}.cpp",
+                        "description": "Name of your source file. \nAvailable commands are:\n{{__CLASS_NAME__}} - entered classname.\n{{__CLASS_NAME_UPPER__}} - entered classname in upper-case letters.\n{{__CLASS_NAME_LOWER__}} - entered classname in lower-case letters."
                     }
                 }
             }

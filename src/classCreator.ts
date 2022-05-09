@@ -2,8 +2,131 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import { DiskFunctions } from "./diskFunctions";
+import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
 
 export class ClassCreator {
+    /**
+     * Loads the class header template and replaces all stored function tokens.
+     * @returns a string which can be saved to a new class header file (.h)
+     */
+    createHeaderContent(): string | undefined {
+        let template = this.getRawHeaderFileName();
+        if (!template) {
+            return template;
+        }
+        return this.replaceFunctionalTokens(template);
+    }
+
+    /**
+     * Loads the class implementation template and replaces all stored function tokens.
+     * @returns a string which can be saved to a new class implementation file (.cpp)
+     */
+    createImplementationContent(): string | undefined {
+        let template = this.getRawImplementationFileName();
+        if (!template) {
+            return template;
+        }
+        return this.replaceFunctionalTokens(template);
+    }
+    replaceFunctionalTokens(template: string): string {
+        let content = template;
+        let tokenArray = TokenWorker.getFunctionalTokens().filter((element) => {
+            return template.indexOf(element.token) > -1;
+        });
+        tokenArray.forEach((ft) => {
+            content = this.executeTokenFunction(ft.value, content);
+        });
+        return content;
+    }
+
+    executeTokenFunction(
+        tokenFunc: FunctionTokenName,
+        content: string
+    ): string {
+        switch (tokenFunc) {
+            case FunctionTokenName.className:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    this.getName()
+                );
+                break;
+            case FunctionTokenName.classNameUpperCase:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toUpper(this.getName())
+                );
+                break;
+            case FunctionTokenName.classNameLowerCaseUnder:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getName(), "_")
+                );
+                break;
+            case FunctionTokenName.classNameLowerCaseDash:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getName(), "-")
+                );
+                break;
+
+            case FunctionTokenName.classNameCapitalizeFirst:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.capitalizeFirst(this.getName())
+                );
+                break;
+            case FunctionTokenName.classHeaderFileName:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    this.getHeaderFileName()
+                );
+                break;
+            case FunctionTokenName.classImplementationFileName:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    this.getImplementationFileName()
+                );
+                break;
+
+            case FunctionTokenName.classHeaderFileNameLower:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getHeaderFileName(), "-")
+                );
+                break;
+            case FunctionTokenName.classImplementationFileNameLower:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getImplementationFileName(), "-")
+                );
+                break;
+            case FunctionTokenName.classHeaderFileNameLowerUnder:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getHeaderFileName(), "_")
+                );
+                break;
+            case FunctionTokenName.classImplementationFileNameLowerUnder:
+                content = TokenWorker.replaceAll(
+                    content,
+                    TokenWorker.getFunctionalTokenInfo(tokenFunc).token,
+                    TokenWorker.toLower(this.getImplementationFileName(), "_")
+                );
+                break;
+        }
+        return content;
+    }
+
     #_name: string = "";
     #_fileNameHeader: string = "";
     #_fileNameImplementation: string = "";
@@ -83,6 +206,30 @@ export class ClassCreator {
         this.#_name = className;
         this.#_fileNameHeader = `${this.#_name}.h`;
         this.#_fileNameImplementation = `${this.#_name}.cpp`;
+
+        // let tokenArray = TokenWorker.getFunctionalTokens();
+
+        let template = this.getRawHeaderFileName();
+        this.#_fileNameHeader = template
+            ? this.replaceFunctionalTokens(template)
+            : `${this.#_name}.h`;
+
+        template = this.getRawImplementationFileName();
+        this.#_fileNameImplementation = template
+            ? this.replaceFunctionalTokens(template)
+            : `${this.#_name}.cpp`;
+
+        // this.replaceFunctionalTokens(template);
+        // if (template !== undefined) {
+        //     let relevantTokens = tokenArray.filter((element) => {
+        //         return template.indexOf(element.token) > -1;
+        //     });
+        //     relevantTokens.forEach((e) => {
+        //         console.log(e.token);
+        //         template = this.executeTokenFunction(e.value, template);
+        //     });
+        // }
+
         return true;
     }
 
@@ -130,5 +277,25 @@ export class ClassCreator {
             this.#_dir &&
             this.#_dir.length > 0
         );
+    }
+
+    /**
+     * Get class header template with un-modified tokens
+     * @returns the un-modified template from the package.json file.
+     */
+    getRawHeaderFileName(): string | undefined {
+        return vscode.workspace
+            .getConfiguration()
+            .get<string>("cpp.gepper.classHeaderFileNameScheme");
+    }
+
+    /**
+     * Get class implementation template with un-modified tokens
+     * @returns the un-modified template from the package.json file.
+     */
+    getRawImplementationFileName(): string | undefined {
+        return vscode.workspace
+            .getConfiguration()
+            .get<string>("cpp.gepper.classImplementationFileNameScheme");
     }
 }

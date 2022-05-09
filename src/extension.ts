@@ -33,8 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
                     placeHolder: "ClassName",
                     prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
                 });
-            const tokens = new TokenWorker();
-            if (tokens.isOnlySpaces(className)) {
+            if (TokenWorker.isOnlySpaces(className)) {
                 return;
             }
             let maker = new ClassCreator(String(className));
