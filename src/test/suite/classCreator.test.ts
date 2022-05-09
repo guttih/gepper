@@ -95,12 +95,12 @@ suite("ClassCreator", () => {
             assert.ok(content !== undefined, "Unable to get raw implementation template");
         });
         test("getHeaderContent", () => {
-            let content: string | undefined = maker.createHeaderContent();
+            let content: string | undefined = maker.getHeaderContent();
             assert.ok(content !== undefined, "Unable to get header template content");
         });
 
         test("getImplementationContent", () => {
-            let content: string | undefined = maker.createImplementationContent();
+            let content: string | undefined = maker.getImplementationContent();
             assert.ok(content !== undefined, "Unable to get implementation template");
         });
     });

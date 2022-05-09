@@ -11,8 +11,8 @@ export class ClassCreator {
      * Loads the class header template and replaces all stored function tokens.
      * @returns a string which can be saved to a new class header file (.h)
      */
-    createHeaderContent(): string | undefined {
-        let template = this.getRawHeaderFileName();
+    getHeaderContent(): string | undefined {
+        let template = this.getRawHeaderContent();
         if (!template) {
             return template;
         }
@@ -23,8 +23,8 @@ export class ClassCreator {
      * Loads the class implementation template and replaces all stored function tokens.
      * @returns a string which can be saved to a new class implementation file (.cpp)
      */
-    createImplementationContent(): string | undefined {
-        let template = this.getRawImplementationFileName();
+    getImplementationContent(): string | undefined {
+        let template = this.getRawImplementationContent();
         if (!template) {
             return template;
         }
@@ -131,8 +131,8 @@ export class ClassCreator {
         if (!this.isValid()) {
             return false;
         }
-        const headerContent = this.createHeaderContent();
-        const sourceContent = this.createImplementationContent();
+        const headerContent = this.getHeaderContent();
+        const sourceContent = this.getImplementationContent();
         const dir = this.getDir();
         if (dir === undefined || headerContent === undefined || sourceContent === undefined) {
             return false;
@@ -220,4 +220,12 @@ export class ClassCreator {
     getRawImplementationFileName(): string | undefined {
         return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classImplementationFileNameScheme");
     }
+
+    getRawHeaderContent(): string | undefined {
+        return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classHeaderTemplate");
+    }
+    getRawImplementationContent(): string | undefined {
+        return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classImplementationTemplate");
+    }
+
 }
