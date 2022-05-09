@@ -20,8 +20,7 @@ Where shall the class be created.
 
 #### Content
 
-You can use content commands (tokens) to create your preferred content of a file created.
-When you open the settings (you can look for gepper) you will see explanations on what each command does.
+You can configure what files created will contain.  Use content commands (tokens) to create your preferred content. When you open the settings (you can look for gepper) you will see explanations on what each command does.  File naming schema can also be configured.
 
 * `"cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
 * `"cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
