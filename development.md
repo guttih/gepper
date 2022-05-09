@@ -28,9 +28,9 @@ Documentation to look at when developing extensions
 ## Deployment
 ### Creating the package
 
-Before any publish make sure all test run correctly with command
+Before publishing make sure all test run correctly by running the command
 ```
-node ./out/test/runTest.js
+npm run test
 
 ```
 
@@ -40,11 +40,11 @@ In this example we use 1.0.0 as the example version number, you will need to bum
 2. Export snippet list to markdown 
   - by running 
     ```
-    node ./src/tools/preparePublish.js
+    npm run prepare
     ```
   - or if you want to want to increase the version number by one, run with parameter *-bump* like so
     ```
-    node ./src/tools/preparePublish.js -bump
+    npm run bump
     ```
     which will increment three version numbers, one in file [package.json] and two [package-lock.json].
 3. Add to Release notes for this version in *CHANGELOG.md*

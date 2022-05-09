@@ -2,17 +2,35 @@
 
 Gepper is a C++ helper extension which includes snippets and adding classes.
 
+## Features
+ * **Quickly create a class** Right-click the explorer window and select from the context menu `Create a new C++ Class`
+
+This extension is in the early stages so very few snippets have been created.
+
+
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-x
 This extension contributes the following settings:
 
-* `mxyExtension.enable`: enable/disable this extension
-* `mxyExtension.thing`: set to `blah` to do something
+### Class creation
 
+#### Directory
+Where shall the class be created.
+* `cpp.gepper.classPath`: Where should classes be created, default is working directory.
+
+#### Content
+
+You can use content commands (tokens) to create your preferred content of a file created.
+When you open the settings (you can look for gepper) you will see explanations on what each command does.
+
+* `"cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
+* `"cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
+* `"cpp.gepper.classHeaderFileNameScheme`: Name of your header file  for a class
+* `"cpp.gepper.classImplementationFileNameScheme`: Name of your source  file for a class
+
+## List of all snippets
+
+**Prefix** is what you type to select the desired snippet.
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
 | #classvar | Add local class variable | Add class variable with getter and setter |

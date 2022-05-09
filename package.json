@@ -4,6 +4,8 @@
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
     "version": "0.0.1",
+    "author": "Gudjon Holm Sigurdsson",
+    "icon": "gepper.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/guttih/gepper"
@@ -112,7 +114,9 @@
         "watch-tests": "tsc -p . -w --outDir out",
         "pretest": "npm run compile-tests && npm run compile && npm run lint",
         "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "test": "node ./out/test/runTest.js",
+        "prepare": "node ./src/tools/preparePublish.js",
+        "bump": "node ./src/tools/preparePublish.js -bump"
     },
     "devDependencies": {
         "@types/vscode": "^1.66.0",

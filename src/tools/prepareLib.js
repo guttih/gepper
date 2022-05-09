@@ -58,12 +58,10 @@ module.exports.bump = function bump(workspaceDir){
     if (!module.exports.isPositiveInteger(oldNumStr)) { return null; }
     let newNum=Number(oldNumStr) + 1;
     let newVersion=`${prefix}.${newNum.toString()}`;
-    // console.log(` packageContent.version:${packageContent.version} packageLockContent.version:${packageLockContent.version} packageLockContent.packages.versionX:${packageLockContent.packages[""].version}`);
     packageContent.version=newVersion;
     packageLockContent.version=newVersion;
     packageLockContent.packages[""].version=newVersion;
-    // console.log(` packageContent.version:${packageContent.version} packageLockContent.version:${packageLockContent.version} packageLockContent.packages.versionX:${packageLockContent.packages[""].version}`);
-    var newContent = JSON.stringify(packageContent, null, 2);
+    var newContent = JSON.stringify(packageContent, null, 4);
     try { fs.writeFileSync(filePackage, newContent); } catch(err) { console.error(err);console.log('Unable to write to file package.json');return null; }
 
     newContent = JSON.stringify(packageLockContent, null, 2);
