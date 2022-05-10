@@ -21,6 +21,11 @@ export enum FunctionTokenName {
     classImplementationFileName = "SOURCE_FILE_NAME",
 }
 
+export enum ExecutionTokens {
+    filePath = "FILE_PATH",
+    fileName = "FILE_NAME",
+}
+
 export class TokenWorker {
     /**
      * Convert text to lower case.
@@ -33,8 +38,7 @@ export class TokenWorker {
         let lower: string;
         for (let i = 1; i < text.length; i++) {
             lower = text[i].toLowerCase();
-            ret +=
-                capPrefix && text[i] !== lower ? `${capPrefix}${lower}` : lower;
+            ret += capPrefix && text[i] !== lower ? `${capPrefix}${lower}` : lower;
         }
         return ret;
     }
@@ -50,7 +54,7 @@ export class TokenWorker {
      * @param name name of function token to create a token from
      * @returns A valid token
      */
-    static createToken(name: FunctionTokenName): string {
+    static createToken(name: FunctionTokenName | ExecutionTokens): string {
         return `${TOKEN.prefix}${TOKEN.prefixVar}${name}${TOKEN.postfixVar}${TOKEN.postfix}`;
     }
 
@@ -76,12 +80,8 @@ export class TokenWorker {
     }
     static getFunctionalTokens(): Array<TokenInfo> {
         // const tokenList = TokenWorker.getAllCreatedToken();
-        const tokenFunctions: Array<TokenInfo> = Object.keys(
-            FunctionTokenName
-        ).map((name) => {
-            return TokenWorker.getFunctionalTokenInfo(
-                (<any>FunctionTokenName)[name]
-            );
+        const tokenFunctions: Array<TokenInfo> = Object.keys(FunctionTokenName).map((name) => {
+            return TokenWorker.getFunctionalTokenInfo((<any>FunctionTokenName)[name]);
             // return {
             //     name,
             //     value: FunctionTokenName[name as keyof typeof FunctionTokenName],
@@ -104,11 +104,7 @@ export class TokenWorker {
      * @param value The new value to set instead of the variable token.
      * @returns
      */
-    static replaceValues(
-        text: string,
-        variableName: string,
-        value: string
-    ): string {
+    static replaceValues(text: string, variableName: string, value: string): string {
         let ret = TokenWorker.replaceAll(text, variableName, value);
         return ret;
     }
