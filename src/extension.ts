@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
         const maker = new ClassCreator(String(className), dir);
         if (!maker.saveClassFiles()) {
-            vscode.window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir}"!`);
+            vscode.window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir()}"!`);
             return false;
         }
         return true;
