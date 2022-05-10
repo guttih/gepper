@@ -36,6 +36,7 @@ You can configure what files created will contain.  Use content commands (tokens
 ## List of all snippets
 
 **Prefix** is what you type to select the desired snippet.
+
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
 | #classvar | Add local class variable | Add class variable with getter and setter |
