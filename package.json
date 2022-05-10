@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -30,7 +30,8 @@
     ],
     "activationEvents": [
         "onCommand:gepper.helloWorld",
-        "onCommand:gepper.createClass"
+        "onCommand:gepper.createClass",
+        "onCommand:gepper.createClassInFolder"
     ],
     "main": "./dist/extension.js",
     "contributes": {
@@ -42,6 +43,10 @@
             {
                 "command": "gepper.createClass",
                 "title": "Create a new C++ Class"
+            },
+            {
+                "command": "gepper.createClassInFolder",
+                "title": "Create new C++ Class here"
             }
         ],
         "snippets": [
@@ -55,6 +60,10 @@
                 {
                     "group": "navigation@-1",
                     "command": "gepper.createClass"
+                },
+                {
+                    "command": "gepper.createClassInFolder",
+                    "when": "explorerResourceIsFolder"
                 }
             ]
         },
@@ -72,11 +81,8 @@
                 "title": "Gepper C++ helper",
                 "properties": {
                     "cpp.gepper.classPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
+                        "type": "string",
+                        "default": "",
                         "description": "Where the class will be created, relative to the project directory."
                     },
                     "cpp.gepper.classHeaderTemplate": {

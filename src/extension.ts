@@ -21,6 +21,18 @@ export function activate(context: vscode.ExtensionContext) {
         // Display a message box to the user
         vscode.window.showInformationMessage("Hello World from gepper!");
     });
+
+    const createNewClass = (className: string | undefined, dir?: string): Boolean => {
+        if (TokenWorker.isOnlySpaces(className)) {
+            return false;
+        }
+        const maker = new ClassCreator(String(className), dir);
+        if (!maker.saveClassFiles()) {
+            vscode.window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir}"!`);
+            return false;
+        }
+        return true;
+    };
     let fnCreateClass = vscode.commands.registerCommand("gepper.createClass", async () => {
         let className: string | undefined = await vscode.window.showInputBox({
             title: "What is the name of your class",
@@ -28,17 +40,20 @@ export function activate(context: vscode.ExtensionContext) {
             prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
         });
 
-        if (TokenWorker.isOnlySpaces(className)) {
-            return;
-        }
-
-        const maker = new ClassCreator(String(className));
-        if (!maker.saveClassFiles()) {
-            vscode.window.showErrorMessage(`Unable to create Class "${className}"!`);
-        }
+        createNewClass(className);
     });
 
-    context.subscriptions.push(fnCreateClass, disposable);
+    let fnCreateClassInFolder = vscode.commands.registerCommand("gepper.createClassInFolder", async (context) => {
+        let className: string | undefined = await vscode.window.showInputBox({
+            title: "What is the name of your class",
+            placeHolder: "ClassName",
+            prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
+        });
+
+        createNewClass(className, context.path);
+    });
+
+    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, disposable);
     vscode.window.showInformationMessage("Gepper is loaded");
 }
 
