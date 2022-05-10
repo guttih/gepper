@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
 import * as path from "path";
 import { DiskFunctions } from "./diskFunctions";
 import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
+import { platform } from "process";
 
 export class ClassCreator {
     #_name: string = "";
@@ -174,7 +174,21 @@ export class ClassCreator {
     #init(className: string, dir?: string) {
         this.#_dir =
             dir || vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") || vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
-
+        if (this.#_dir && this.#_dir.length > 0 && vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath) {
+            //Make relative path
+            let workDir = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+            let dir = this.#_dir;
+            if (platform === "win32") {
+                if (dir.length === 1 || (dir.length > 1 && dir[1] !== ":")) {
+                    this.#_dir = path.join(workDir, dir);
+                }
+            } else {
+                //linux
+                if (dir !== "/") {
+                    this.#_dir = path.join(workDir, dir);
+                }
+            }
+        }
         this.#setName(className);
     }
 
@@ -227,5 +241,4 @@ export class ClassCreator {
     getRawImplementationContent(): string | undefined {
         return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classImplementationTemplate");
     }
-
 }

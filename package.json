@@ -81,11 +81,8 @@
                 "title": "Gepper C++ helper",
                 "properties": {
                     "cpp.gepper.classPath": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "default": null,
+                        "type": "string",
+                        "default": "",
                         "description": "Where the class will be created, relative to the project directory."
                     },
                     "cpp.gepper.classHeaderTemplate": {
