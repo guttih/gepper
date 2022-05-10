@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -29,17 +29,13 @@
         "tern"
     ],
     "activationEvents": [
-        "onCommand:gepper.helloWorld",
         "onCommand:gepper.createClass",
-        "onCommand:gepper.createClassInFolder"
+        "onCommand:gepper.createClassInFolder",
+        "onLanguage:cpp"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
-            {
-                "command": "gepper.helloWorld",
-                "title": "Hello World"
-            },
             {
                 "command": "gepper.createClass",
                 "title": "Create a new C++ Class"
@@ -106,6 +102,11 @@
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.cpp",
                         "description": "Name of your source file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n"
+                    },
+                    "cpp.gepper.shellExecute.OnSave.Command": {
+                        "type": "string",
+                        "default": "",
+                        "description": "Shell command to execute when user saves a .h or a .cpp file.\n You can use some tokens in the command, and those tokens will be replaced.\nAvailable tokens are:\n{{__FILE_NAME__}} - File name.\n{{__FILE_PATH__}} - Path (with no ending slash) to the file. \nCommand example:\n cp \"{{__FILE_PATH__}}/{{__FILE_NAME__}}\" \"{{__FILE_PATH__}}/{{__FILE_NAME__}}.backup\"."
                     }
                 }
             }

@@ -1,11 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
 import { ClassCreator } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
-import { DiskFunctions } from "./diskFunctions";
+import { ExecException, Executioner } from "./executioner";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,10 +14,23 @@ export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand("gepper.helloWorld", () => {
-        // The code you place here will be executed every time your command is executed
-        // Display a message box to the user
-        vscode.window.showInformationMessage("Hello World from gepper!");
+
+    let onSaveCppFile = vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+        // if (document.languageId === "yourid" && document.uri.scheme === "file") {
+        if (document.languageId === "cpp") {
+            // console.log(`${document.fileName} saved!`);
+            // let bla = vscode.env.shell;
+            const configPropertyPath = "cpp.gepper.shellExecute.OnSave.Command";
+            const cmd = vscode.workspace.getConfiguration().get<string>(configPropertyPath);
+            if (cmd) {
+                Executioner.run(Executioner.replaceTokens(cmd, document.fileName)).catch((err) => {
+                    vscode.window.showErrorMessage(`Error running onSave command: \n${cmd}`, {
+                        detail: `\n\nError:${JSON.stringify(err, null, 2)}\nChange the command in settings by searching for:\n${configPropertyPath} `,
+                        modal: true,
+                    });
+                });
+            }
+        }
     });
 
     const createNewClass = (className: string | undefined, dir?: string): Boolean => {
@@ -53,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
         createNewClass(className, context.path);
     });
 
-    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, disposable);
+    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile);
     vscode.window.showInformationMessage("Gepper is loaded");
 }
 
