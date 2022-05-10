@@ -24,14 +24,14 @@ Where shall the class be created.
 
 You can configure what files created will contain.  Use content commands (tokens) to create your preferred content. When you open the settings (you can look for gepper) you will see explanations on what each command does.  File naming schema can also be configured.
 
-* `"cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
-* `"cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
-* `"cpp.gepper.classHeaderFileNameScheme`: Name of your header file  for a class
-* `"cpp.gepper.classImplementationFileNameScheme`: Name of your source  file for a class
+* `cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
+* `cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
+* `cpp.gepper.classHeaderFileNameScheme`: Name of your header file  for a class
+* `cpp.gepper.classImplementationFileNameScheme`: Name of your source  file for a class
 
 #### Run shell command
 
-* `"cpp.gepper.shellExecute.OnSave.Command`: Command to run after saving .h or a .cpp file.
+* `cpp.gepper.shellExecute.OnSave.Command`: Command to run after saving .h or a .cpp file.
 
 ## List of all snippets
 
