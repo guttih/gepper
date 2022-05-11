@@ -39,7 +39,7 @@ You can configure what files created will contain.  Use content commands (tokens
 
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
-| #classvar | Add local class variable | Add class variable with getter and setter |
+| getterAndSetter | Add local class variable | Add class variable with getter and setter |
 
 
 [Top](#gepper-readme)

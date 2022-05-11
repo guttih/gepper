@@ -123,7 +123,9 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "prepare": "node ./src/tools/preparePublish.js",
-        "bump": "node ./src/tools/preparePublish.js -bump"
+        "bump": "node ./src/tools/preparePublish.js -bump",
+        "install": "./src/tools/packageTest.sh -install",
+        "uninstall": "./src/tools/packageTest.sh -uninstall"
     },
     "devDependencies": {
         "@types/vscode": "^1.66.0",
