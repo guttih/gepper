@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import { ClassCreator } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
-import { ExecException, Executioner } from "./executioner";
+import {  Executioner } from "./executioner";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import { test } from "mocha";
 import { ClassCreator } from "../../classCreator";
+import * as vscode from "vscode";
 
 suite("ClassCreator", () => {
     suite("isClassNameValid", () => {
@@ -23,10 +24,7 @@ suite("ClassCreator", () => {
             assert.ok(b, `Class name="${name}": should be valid. isClassNameValid returned ${b}`);
             name = "_abba_";
             b = ClassCreator.isClassNameValid(name);
-            assert.ok(
-                b,
-                `Class name="${name}": should be valid when starting and ending with _ . isClassNameValid returned ${b}`
-            );
+            assert.ok(b, `Class name="${name}": should be valid when starting and ending with _ . isClassNameValid returned ${b}`);
             name = "abba123";
             b = ClassCreator.isClassNameValid(name);
             assert.ok(b, `Class name="${name}": Class names can end with numbers. isClassNameValid returned ${b}`);
@@ -56,16 +54,10 @@ suite("ClassCreator", () => {
             assert.ok(!b, `Class name="${name}": Should be invalid Class name. isClassNameValid returned ${b}`);
             name = "123abba123";
             b = ClassCreator.isClassNameValid(name);
-            assert.ok(
-                !b,
-                `Class name="${name}": Class names are not allowed to start with numbers. isClassNameValid returned ${b}"`
-            );
+            assert.ok(!b, `Class name="${name}": Class names are not allowed to start with numbers. isClassNameValid returned ${b}"`);
             name = "*123abba123";
             b = ClassCreator.isClassNameValid(name);
-            assert.ok(
-                !b,
-                `Class name="${name}": Class names cannot start with a symbol. isClassNameValid returned ${b}`
-            );
+            assert.ok(!b, `Class name="${name}": Class names cannot start with a symbol. isClassNameValid returned ${b}`);
             name = "123a#bba123";
             b = ClassCreator.isClassNameValid(name);
             assert.ok(!b, `Class name="${name}": Class names cannot include symbols. isClassNameValid returned ${b}`);
@@ -124,6 +116,19 @@ suite("ClassCreator", () => {
         test("Get file.cpp names with path", () => {
             const creator = new ClassCreator(name, path);
             assert.strictEqual(creator.getImplementationFileName(true), `${path}/KlassiMan.cpp`);
+        });
+    });
+
+    suite("Paths", () => {
+
+        test("When no path is proved (default)", () => {
+            const workDir:string|undefined = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+            const creator = new ClassCreator("name");
+            assert.strictEqual(
+                creator.getDir(),
+                workDir,
+                "Empty dir should resolve to workspace directory"
+            );
         });
     });
 });

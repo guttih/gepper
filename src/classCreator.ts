@@ -184,7 +184,7 @@ export class ClassCreator {
                 }
             } else {
                 //linux
-                if (dir !== "/") {
+                if (dir[0] !== "/") {
                     this.#_dir = path.join(workDir, dir);
                 }
             }
