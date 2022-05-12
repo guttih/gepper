@@ -14,39 +14,59 @@ functional tokens in this document.
 ## Creating classes
 
 When you create a class, you can configure it's name, default location and 
-content.
+content.  The tables below shows available functional tokens and what those tokens will be
+replaced with by the extension at class creation time.
+
 
 ### Class creation - Properties
-
-* `cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
-* `cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
-* `cpp.gepper.classHeaderFileNameScheme`: Name of your header file  for a class
-* `cpp.gepper.classImplementationFileNameScheme`: Name of your source  file for a class
-
-
-The table below shows available functional tokens and what those tokens will be
-replaced with by the extension on a class creation time.
-
-### Class Creation - Functional tokens
 
 A default content template for the two files **.h** and **.cpp** is created by 
 the extension when it is installed.  You can configure these templates to 
 fulfill your needs.
 
-**Available Class creation tokens are:**
+#### Class Creation Template - Functional tokens
+
+*Available properties are*
+
+* `cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
+* `cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
+
+**Available Class creation template tokens are:**
 
 *Available functional tokens are*
 
 | Functional token | Will be replaced with |
 | :----- | :----- |
-| {{__CLASS_NAME__}} | Entered class name |
-| {{__CLASS_NAME_UPPER__}} | Class name transformed to UPPERCASE |
-| {{__CLASS_NAME_LOWER__}} | Class name transformed to lowercase |
-| {{__CLASS_NAME_LOWER_DASH__}} | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "-" |
-| {{__CLASS_NAME_LOWER_UNDER__}} | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "_" |
-| {{__CLASS_NAME_CAPITALIZE__}} | First letter of entered class name is capitalized |
-| {{__HEADER_FILE_NAME__}} | default header file name as entered in the settings |
-| {{__SOURCE_FILE_NAME__}} | default source file name as entered in the settings |
+| `{{__CLASS_NAME__}}` | Entered class name |
+| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |
+| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |
+| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "-" |
+| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "_" |
+| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |
+| `{{__HEADER_FILE_NAME__}}` | default header file name as entered in the settings |
+| `{{__SOURCE_FILE_NAME__}}` | default source file name as entered in the settings |
+
+#### Class creation naming schema - Properties
+
+Naming the files at class creation time.
+
+*Available properties are*
+
+* `cpp.gepper.classHeaderFileNameScheme`: Name of your header file  for a class
+* `cpp.gepper.classImplementationFileNameScheme`: Name of your source  file for a class
+
+**Available Class creation naming schema tokens are:**
+
+*Available functional tokens are*
+
+| Functional token | Will be replaced with |
+| :----- | :----- |
+| `{{__CLASS_NAME__}}` | Entered class name |
+| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |
+| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |
+| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "-" |
+| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "_" |
+| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |
 
 ## On save command
 
@@ -67,8 +87,8 @@ Visual Studio Code.
 
 | Functional token | Will be replaced with |
 | :----- | :----- |
-| {{__FILE_PATH__}} | Path (with no ending slash) to the file |
-| {{__FILE_NAME__}} | File name |
+| `{{__FILE_PATH__}}` | Path (with no ending slash) to the file |
+| `{{__FILE_NAME__}}` | File name |
 
 ----------
 
