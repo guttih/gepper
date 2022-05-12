@@ -47,6 +47,16 @@ export class TokenWorker {
         }
         return ret;
     }
+
+    static isToken(text: string):Boolean {
+        //todo: lookup string values in all tokens
+        return text.startsWith(`${TOKEN.prefix}${TOKEN.prefixVar}`) && text.endsWith(`${TOKEN.postfixVar}${TOKEN.postfix}`);
+    }
+    static hasToken(text: string):Boolean {
+        //todo: lookup string values in all tokens
+        const iSearch = text.indexOf(`${TOKEN.postfix}${TOKEN.prefixVar}`);
+        return  iSearch > -1 && text.indexOf(`${TOKEN.postfixVar}${TOKEN.postfix}`) > iSearch;
+    }
     static capitalizeFirst(text: string): string {
         return `${text[0].toUpperCase()}${text.substring(1)}`;
     }
