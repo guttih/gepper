@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -102,6 +102,16 @@
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.cpp",
                         "markdownDescription": "### Class source file naming schema  (.cpp)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
+                    },
+                    "cpp.gepper.classCreated.ShowFile": {
+                        "type": "string",
+                        "enum": [
+                            "Header file",
+                            "Source file",
+                            "none"
+                        ],
+                        "default": "Header file",
+                        "markdownDescription": "### Open on class creation\n\nOpen a file in editor after the class has been created."
                     },
                     "cpp.gepper.shellExecute.OnSave.Command": {
                         "type": "string",

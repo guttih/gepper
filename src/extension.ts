@@ -1,9 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { ClassCreator } from "./classCreator";
+import { ClassCreator, OpenAfterClassCreation } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
-import {  Executioner } from "./executioner";
+import { Executioner } from "./executioner";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -33,16 +33,34 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const createNewClass = (className: string | undefined, dir?: string): Boolean => {
+    const createNewClass = (className: string | undefined, dir?: string): ClassCreator | null => {
         if (TokenWorker.isOnlySpaces(className)) {
-            return false;
+            return null;
         }
         const maker = new ClassCreator(String(className), dir);
         if (!maker.saveClassFiles()) {
             vscode.window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir()}"!`);
-            return false;
+            return null;
         }
-        return true;
+
+        switch (maker.getRawClassCreatedShowFile()) {
+            case OpenAfterClassCreation.headerFile:
+                vscode.workspace.openTextDocument(maker.getHeaderFileName(true)).then((doc) => {
+                    vscode.window.showTextDocument(doc, {
+                        viewColumn: vscode.ViewColumn.Active,
+                    });
+                });
+                break;
+            case OpenAfterClassCreation.sourceFile:
+                vscode.workspace.openTextDocument(maker.getImplementationFileName(true)).then((doc) => {
+                    vscode.window.showTextDocument(doc, {
+                        viewColumn: vscode.ViewColumn.Active,
+                    });
+                });
+                break;
+        }
+
+        return maker;
     };
     let fnCreateClass = vscode.commands.registerCommand("gepper.createClass", async () => {
         let className: string | undefined = await vscode.window.showInputBox({
