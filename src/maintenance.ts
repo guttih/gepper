@@ -23,6 +23,33 @@ export class Maintenance {
             return null;
         }
     }
+
+    /**
+     * Replaces everything between two tokens and returns the result.
+     * @param content :   Original content which shall be changed.
+     * @param startToken  newContent will be inserted after The first instance found matching the text in this token.
+     * @param endToken    newContent will be inserted before First instance of this text, found after startToken.
+     * @param newContent  New content which will be inserted between the start and end tokens.
+     * @returns           On success, the modified content.  On error, the return value is null.
+     */
+    static replaceContent(content: string, startToken: string, endToken: string, newContent: string): string | null {
+        let start = content.indexOf(startToken);
+        let end = content.indexOf(endToken, start);
+        if (start < 0) {
+            console.error(`startToken "${startToken}" not found!`);
+            return null;
+        }
+        if (end < 0) {
+            console.error(`endToken "${endToken}" not found!`);
+            return null;
+        }
+        let ret = content.substring(0, start + startToken.length);
+        ret += newContent;
+        ret += content.substring(end);
+
+        return ret;
+    }
+
     static savePropertiesToSettingsMarkdown(): Boolean {
         let allTokens = TokenWorker.getFunctionalTokens();
         let allExecutionTokens = TokenWorker.getExecutionTokens();
@@ -35,9 +62,31 @@ export class Maintenance {
         let executionMdDesc: string = Maintenance.makeAvailableCommandMarkdownDescription(
             Maintenance.getDetailedExecutionInfo(allExecutionTokens, true)
         );
-        const mdSettingsName = Maintenance.getMarkDownDocumentName("settings.md");
-        const msSettingsString = DiskFunctions.readFromFile(mdSettingsName);
-        return false;
+        const filename = Maintenance.getMarkDownDocumentName("settings.md");
+        const mdSettings = DiskFunctions.readFromFile(filename);
+        if (!mdSettings === null) {
+            return false;
+        }
+        let newContent = Maintenance.replaceContent(
+            String(mdSettings),
+            "**Available Class creation tokens are:**\n\n",
+            "## On save command",
+            `${templateFunctionDescription}\n`
+        );
+        if (!newContent === null) {
+            return false;
+        }
+        newContent = Maintenance.replaceContent(
+            String(newContent),
+            "**Available On save command tokens are:**\n\n",
+            "----------\n",
+            `${executionMdDesc}\n`
+        );
+        if (!newContent === null) {
+            return false;
+        }
+        
+        return DiskFunctions.writeToFile(filename, String(newContent));
     }
     static updateAllTokenPropertyDescriptions(packageJson: any): Boolean {
         let allTokens = TokenWorker.getFunctionalTokens();
@@ -136,8 +185,6 @@ export class Maintenance {
         ret += Maintenance.makeMarkdownTableRow("Functional token", "Will be replaced with");
         ret += Maintenance.makeMarkdownTableRow(":-----", ":-----");
         details.forEach((e) => (ret += `${e.markdownDescription}`));
-        // console.log(JSON.stringify(details, null, 4));
-        console.log(ret);
         return ret;
     }
 
