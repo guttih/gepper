@@ -35,16 +35,18 @@ fulfill your needs.
 
 **Available Class creation tokens are:**
 
-| Token | Will be replaced with |
-|:------------------------------ | :----------------------------------------------------|
-| {{__CLASS_NAME__}}             | Entered class name.                                  |
-| {{__CLASS_NAME_UPPER__}}       | Class name transformed to UPPERCASE.                 |
-| {{__CLASS_NAME_LOWER__}}       | Class name transformed to lowercase.                 |
-| {{__CLASS_NAME_LOWER_DASH__}}  | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "-".  |
-| {{__CLASS_NAME_LOWER_UNDER__}} | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "_".  |
-| {{__CLASS_NAME_CAPITALIZE__}}  | First letter of entered class name is capitalized.   |
-| {{__HEADER_FILE_NAME__}}       | default header file name as entered in the settings. |
-| {{__SOURCE_FILE_NAME__}}       | default source file name as entered in the settings. |
+*Available functional tokens are*
+
+| Functional token | Will be replaced with |
+| :----- | :----- |
+| {{__CLASS_NAME__}} | Entered class name |
+| {{__CLASS_NAME_UPPER__}} | Class name transformed to UPPERCASE |
+| {{__CLASS_NAME_LOWER__}} | Class name transformed to lowercase |
+| {{__CLASS_NAME_LOWER_DASH__}} | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "-" |
+| {{__CLASS_NAME_LOWER_UNDER__}} | Class name transformed to lowerCase and every transformed uppercase character is prefixed with "_" |
+| {{__CLASS_NAME_CAPITALIZE__}} | First letter of entered class name is capitalized |
+| {{__HEADER_FILE_NAME__}} | default header file name as entered in the settings |
+| {{__SOURCE_FILE_NAME__}} | default source file name as entered in the settings |
 
 ## On save command
 
@@ -61,10 +63,12 @@ Visual Studio Code.
 
 **Available On save command tokens are:**
 
-| Token             | Will be replaced with                |
-| :---------------- | :----------------------------------- |
-| {{__FILE_NAME__}} | Entered class name.                  |
-| {{__FILE_PATH__}} | Class name transformed to UPPERCASE. |
+*Available functional tokens are*
+
+| Functional token | Will be replaced with |
+| :----- | :----- |
+| {{__FILE_PATH__}} | Path (with no ending slash) to the file |
+| {{__FILE_NAME__}} | File name |
 
 ----------
 
