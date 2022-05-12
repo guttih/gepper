@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile);
-    vscode.window.showInformationMessage("Gepper is loaded");
+    // vscode.window.showInformationMessage("Gepper is loaded");
 }
 
 // this method is called when your extension is deactivated

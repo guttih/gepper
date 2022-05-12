@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { DiskFunctions } from "./diskFunctions";
-import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
+import { TokenWorker, FunctionTokenName } from "./tokenWorker";
 import { platform } from "process";
 
 export class ClassCreator {
