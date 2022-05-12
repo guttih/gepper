@@ -1,7 +1,7 @@
 import * as cp from "child_process";
 import * as path from "path";
 import { basename, dirname } from "path";
-import {TokenWorker, ExecutionTokens} from "./tokenWorker";
+import {TokenWorker, ExecutionToken} from "./tokenWorker";
 export interface ExecException extends Error {
     cmd?: string | undefined;
     killed?: boolean | undefined;
@@ -18,8 +18,8 @@ export class Executioner {
         const dir  = dirname(fullFilename);
         const name = basename(fullFilename);
         let ret:string;
-        ret = TokenWorker.replaceAll(text, TokenWorker.createToken(ExecutionTokens.filePath), dir);
-        ret = TokenWorker.replaceAll(ret,  TokenWorker.createToken(ExecutionTokens.fileName), name);
+        ret = TokenWorker.replaceAll(text, TokenWorker.createToken(ExecutionToken.filePath), dir);
+        ret = TokenWorker.replaceAll(ret,  TokenWorker.createToken(ExecutionToken.fileName), name);
         return ret;
     }
     static run(command: string) {
