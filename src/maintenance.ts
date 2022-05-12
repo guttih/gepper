@@ -17,10 +17,11 @@ export class Maintenance {
         let fileName = Maintenance.getPackageJsonFullFileName(); /*  */
         try {
             fs.writeFileSync(fileName, newContent);
+            return true;
         } catch (err) {
             console.error(err);
             console.log("Unable to write to file package.json");
-            return null;
+            return false;
         }
     }
 
@@ -100,13 +101,16 @@ export class Maintenance {
         let executionMdDesc: string = Maintenance.makeAvailableCommandMarkdownDescription(
             Maintenance.getDetailedExecutionInfo(allExecutionTokens, true)
         );
+        const startOfLink:string = " [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md";
+        const readLinkFunc =`${startOfLink}#class-creation---functional-tokens)`;
+        const readLinkFile =`${startOfLink}#on-save-command---functional-tokens)`;
         // let executionMdDesc: string = Maintenance.makeAvailableCommandMarkdownDescription(Maintenance.getDetailedInfo(allExecutionTokens, true));
 
         if (
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classHeaderTemplate",
-                Maintenance.makeTokenFunctionDescription("### Class Template for header file content (.h)", templateFunctionDescription)
+                Maintenance.makeTokenFunctionDescription("### Class Template for header file content (.h)", `${templateFunctionDescription}${readLinkFunc}`)
             )
         ) {
             return false;
@@ -115,7 +119,7 @@ export class Maintenance {
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classImplementationTemplate",
-                Maintenance.makeTokenFunctionDescription("### Class Template for source file content (.cpp)", templateFunctionDescription)
+                Maintenance.makeTokenFunctionDescription("### Class Template for source file content (.cpp)", `${templateFunctionDescription}${readLinkFunc}`)
             )
         ) {
             return false;
@@ -124,7 +128,7 @@ export class Maintenance {
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classHeaderFileNameScheme",
-                Maintenance.makeTokenFunctionDescription("### Class header file naming schema (.h)", fileFunctionMdDesc)
+                Maintenance.makeTokenFunctionDescription("### Class header file naming schema (.h)", `${fileFunctionMdDesc}${readLinkFunc}`)
             )
         ) {
             return false;
@@ -133,7 +137,7 @@ export class Maintenance {
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classImplementationFileNameScheme",
-                Maintenance.makeTokenFunctionDescription("### Class source file naming schema  (.cpp)", fileFunctionMdDesc)
+                Maintenance.makeTokenFunctionDescription("### Class source file naming schema  (.cpp)", `${fileFunctionMdDesc}${readLinkFunc}`)
             )
         ) {
             return false;
@@ -143,7 +147,7 @@ export class Maintenance {
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.shellExecute.OnSave.Command",
-                Maintenance.makeTokenFunctionDescription("### Shell command to execute on save", executionMdDesc)
+                Maintenance.makeTokenFunctionDescription("### Shell command to execute on save", `${executionMdDesc}${readLinkFile}`)
             )
         ) {
             return false;
