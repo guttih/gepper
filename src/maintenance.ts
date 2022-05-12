@@ -70,9 +70,19 @@ export class Maintenance {
         }
         let newContent = Maintenance.replaceContent(
             String(mdSettings),
-            "**Available Class creation tokens are:**\n\n",
-            "## On save command",
+            "**Available Class creation template tokens are:**\n\n",
+            "#### Class creation naming schema - Properties",
             `${templateFunctionDescription}\n`
+        );
+        if (!newContent === null) {
+            return false;
+        }
+
+        newContent = Maintenance.replaceContent(
+            String(newContent),
+            "**Available Class creation naming schema tokens are:**\n\n",
+            "## On save command",
+            `${fileFunctionMdDesc}\n`
         );
         if (!newContent === null) {
             return false;
@@ -232,7 +242,7 @@ export class Maintenance {
             : Maintenance.joinDescription(info.token, desc, ".", minTokenWidth);
     }
     static makeMarkdownTableRow(column1: string, column2: string) {
-        return `| ${column1} | ${column2} |\n`;
+        return `| ${ TokenWorker.isToken(column1)? `\`${column1}\`` : column1} | ${column2} |\n`;
     }
     static joinDescription(prefix: string, message: string, postfix: string = "", minTokenWidth?: Number) {
         if (minTokenWidth !== undefined) {
