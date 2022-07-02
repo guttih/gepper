@@ -49,6 +49,10 @@
             {
                 "language": "cpp",
                 "path": "./snippets/class.json"
+            },
+            {
+                "language": "cmake",
+                "path": "./snippets/cmake.json"
             }
         ],
         "menus": {
