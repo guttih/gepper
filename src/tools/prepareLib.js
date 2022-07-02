@@ -55,7 +55,7 @@ module.exports.bump = function bump(workspaceDir){
     if (i < 2) {return null;}
     let prefix=oldVersion.substring(0,i);
     let oldNumStr=oldVersion.substring(i+1);
-    if (!module.exports.isPositiveInteger(oldNumStr)) { return null; }
+    if (!module.exports.isPositiveInteger(oldNumStr, true)) { return null; }
     let newNum=Number(oldNumStr) + 1;
     let newVersion=`${prefix}.${newNum.toString()}`;
     packageContent.version=newVersion;
@@ -70,15 +70,14 @@ module.exports.bump = function bump(workspaceDir){
     return newVersion;
 };
 
-module.exports.isPositiveInteger = function isPositiveInteger(str) {
+module.exports.isPositiveInteger = function isPositiveInteger(str, bTreatZeroAsPositive) {
     if (typeof str !== 'string') {
       return false;
     }
-  
     const num = Number(str);
   
-    if (Number.isInteger(num) && num > 0) {
-      return true;
+    if (Number.isInteger(num)) {
+      return bTreatZeroAsPositive ? true : (num > 0);
     }
   
     return false;

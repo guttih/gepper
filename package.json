@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -88,7 +88,7 @@
                     "cpp.gepper.classHeaderTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
-                        "default": "#ifndef {{__CLASS_NAME_UPPER__}}_H\n#define {{__CLASS_NAME_UPPER__}}_H\n\n#pragma once\n\nclass {{__CLASS_NAME__}}\n{\npublic:\n    {{__CLASS_NAME__}}();\n    ~{{__CLASS_NAME__}}();\n\nprivate:\n\n};\n\n#endif",
+                        "default": "#ifndef {{__CLASS_NAME_UPPER__}}_H\n#define {{__CLASS_NAME_UPPER__}}_H\n\n\nclass {{__CLASS_NAME__}}\n{\npublic:\n    {{__CLASS_NAME__}}();\n    ~{{__CLASS_NAME__}}();\n\nprivate:\n\n};\n\n#endif",
                         "markdownDescription": "### Class Template for header file content (.h)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n| `{{__HEADER_FILE_NAME__}}` | default header file name as entered in the settings |\n| `{{__SOURCE_FILE_NAME__}}` | default source file name as entered in the settings |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
                     },
                     "cpp.gepper.classImplementationTemplate": {
@@ -156,5 +156,11 @@
         "typescript": "^4.6.4",
         "webpack": "^5.70.0",
         "webpack-cli": "^4.9.2"
+    },
+    "__metadata": {
+        "id": "72315b7a-3b59-465a-a062-78450c4cde9a",
+        "publisherDisplayName": "guttih",
+        "publisherId": "157e993a-fdc8-4148-a284-f5304fe179d8",
+        "isPreReleaseVersion": false
     }
 }

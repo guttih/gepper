@@ -3,7 +3,7 @@ import { test } from "mocha";
 import { TokenWorker, FunctionTokenName } from "../../tokenWorker";
 
 const before =
-    "#ifndef {{__CLASS_NAME_UPPER__}}_H\n\t\t#define {{__CLASS_NAME_UPPER__}}_H\n\t\t\n\t\t#pragma once\n\t\t\n\t\tclass {{__CLASS_NAME__}}\n\t\t{\n\t\tpublic:\n\t\t	{{__CLASS_NAME__}}();\n\t\t	~{{__CLASS_NAME__}}();\n\t\t\n\t\tprivate:\n\t\t\n\t\t};\n\t\t\n\t\t#endif";
+    "#ifndef {{__CLASS_NAME_UPPER__}}_H\n\t\t#define {{__CLASS_NAME_UPPER__}}_H\n\t\t\\t\t\n\t\tclass {{__CLASS_NAME__}}\n\t\t{\n\t\tpublic:\n\t\t	{{__CLASS_NAME__}}();\n\t\t	~{{__CLASS_NAME__}}();\n\t\t\n\t\tprivate:\n\t\t\n\t\t};\n\t\t\n\t\t#endif";
 
 suite("TokenWorker", () => {
     test("replaceValues", () => {
