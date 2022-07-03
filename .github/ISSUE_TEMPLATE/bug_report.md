@@ -47,7 +47,7 @@ _When the bug occurred what environment where you using the **gepper** extension
  
 #### gepper extension version
  
- <!-- In VS Code select "View" > "Extensions", then type sheller and "Copy" and paste the version number here -->
+ <!-- In VS Code select "View" > "Extensions", then type gepper and "Copy" and paste the version number here -->
 
 
 ### Additional information
