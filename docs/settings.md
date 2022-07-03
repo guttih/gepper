@@ -111,7 +111,6 @@ Here are examples of possible values using functional tokens.
 #ifndef {{__CLASS_NAME_UPPER__}}_H
 #define {{__CLASS_NAME_UPPER__}}_H
 
-#pragma once
 
 class {{__CLASS_NAME__}}
 {

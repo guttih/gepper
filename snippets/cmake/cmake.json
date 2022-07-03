@@ -1,13 +1,11 @@
 {
-    "Hello CMakeFiles world": {
-        "prefix": ["set variable","add variable"],
-        "body": [
-            "    set(${1:varName} ${2:varValue})"
-        ],
-        "description": "Create a variable"
+    "Declare a CMake variable": {
+        "prefix": ["set variable", "add variable"],
+        "body": ["    set(${1:varName} ${2:varValue})"],
+        "description": "Add a variable"
     },
     "Create a GoogleTest CMake Project for your repository": {
-        "prefix": "Gepper: GoogleTest Create CMake Project",
+        "prefix": "Gepper: GoogleTest Create Project",
         "body": [
             "cmake_minimum_required(VERSION 3.14)",
             "",
@@ -64,5 +62,43 @@
             ""
         ],
         "description": "Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located"
+    },
+    "Add a GoogleTest CMake child executable": {
+        "prefix": "Gepper: GoogleTest Add Sub Executable Project",
+        "body": [
+            "",
+            "# Project name: ${1:${TM_DIRECTORY/.*[\\\\|\\/]+(.*)/$1/}}",
+            "# Make sure parent CMakeLists.txt adds next line above the line \"gtest_discover_tests(\\${This})\"",
+            "#   add_subdirectory($1)",
+            "",
+            "cmake_minimum_required(VERSION 3.20)",
+            "",
+            "add_executable(",
+            "    ${1/(.*)/${1:/pascalcase}/}Tests",
+            "    ${1/(.*)/${1:/pascalcase}/}MainTest.cc",
+            ")",
+            "target_link_libraries(",
+            "    ${1/(.*)/${1:/pascalcase}/}Tests",
+            "    gtest_main",
+            ")",
+            "",
+            "gtest_discover_tests(",
+            "    ${1/(.*)/${1:/pascalcase}/}Tests",
+            ")",
+            "",
+            "# Now, create a file called ${1/(.*)/${1:/pascalcase}/}MainTest.cc and add the following content to it: ",
+            "#     // File: ${1/(.*)/${1:/pascalcase}/}MainTest.cc",
+            "#",
+            "#     #include <gtest/gtest.h>",
+            "#",
+            "#     // Demonstrate some basic assertions.",
+            "#     TEST(${1/(.*)/${1:/pascalcase}/}Test, BasicAssertions) {",
+            "#     // Expect two strings not to be equal.",
+            "#     EXPECT_STRNE(\"hello\", \"world\");",
+            "#     // Expect equality.",
+            "#     EXPECT_EQ(7 * 6, 42);",
+            "#     }\n"
+        ],
+        "description": "Add a GoogleTest Test Application to an existing parent application."
     }
 }

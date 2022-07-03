@@ -1,0 +1,62 @@
+{
+    "Class deceleration": {
+        "prefix": ["class","class header","class deceleration"],
+        "body": [
+            "// File: $1.h created: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+            "#ifndef _${1/([a-z]+)(?=[A-Z])|([A-Z])(?=[A-Z])|([A-Z][a-z]+)(?=$)|([A-Z][a-z]+)|([a-z]+)(?=$)/${1:/upcase}${1:+_}$2${2:+_}${3:/upcase}${4:/upcase}${4:+_}${5:/upcase}/g}__H_",
+            "#define _${1/([a-z]+)(?=[A-Z])|([A-Z])(?=[A-Z])|([A-Z][a-z]+)(?=$)|([A-Z][a-z]+)|([a-z]+)(?=$)/${1:/upcase}${1:+_}$2${2:+_}${3:/upcase}${4:/upcase}${4:+_}${5:/upcase}/g}__H_",
+            "",
+            "class ${1:MyClass}",
+            "{",
+            "public:",
+            "    $1();",
+            "    ~$1();",
+            "",
+            "private:",
+            "    $2",
+            "",
+            "};",
+            "",
+            "#endif\n"
+        ],
+        "description": "Class deceleration in a header file"
+    },
+    "class Implementation": {
+        "prefix": ["class cpp","class implementation","class source"],
+        "body": [
+            "#include \"${1:$TM_FILENAME_BASE}.h\"",
+            "",
+            "${1:/camelcase}::${1:/camelcase}()",
+            "{",
+            "    $2",
+            "}",
+            "",
+            "${1:/camelcase}::~${1:/camelcase}()",
+            "{",
+            "    ",
+            "}",
+            ""
+        ],
+        "description": "Class implementation for a source file"
+    },
+    "Add local class variable": {
+        "prefix": "getterAndSetter",
+        "body": [
+            "    ${1:int} m_${2:varName};",
+            "    $1 get${2/(^[a-z])/${1:/upcase}/}(){ ",
+            "        return m_$2; ",
+            "    }",
+            "    void set${2/(^[a-z])/${1:/upcase}/}($1 value){ ",
+            "        m_$2 = value; ",
+            "    }\n"
+        ],
+        "description": "Add class variable with getter and setter"
+    },
+    "Convert string to SNAKE_CASE": {
+        "prefix": "CamelCase to SnakeCase",
+        "body": [
+            "${1:CamelCaseStringToConvertAndPressTab} -> ${1/([a-z]+)(?=[A-Z])|([A-Z])(?=[A-Z])|([A-Z][a-z]+)(?=$)|([A-Z][a-z]+)|([a-z]+)(?=$)/${1:/upcase}${1:+_}$2${2:+_}${3:/upcase}${4:/upcase}${4:+_}${5:/upcase}/g}"
+        ],
+        "description": "Converts CameCaseWord to CAME_CASE_WORD"
+    }
+}

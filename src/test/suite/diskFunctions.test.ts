@@ -48,7 +48,7 @@ suite("DiskFunction file or directory exists", () => {
 suite("DiskFunction Write to and delete file", () => {
     
     let testFile=path.join(dirProject, "test-file.txt");
-    const contentToSave = "hello world\nand another line.·\n"
+    const contentToSave = "hello world\nand another line.·\n";
 
     console.log(`Writing and reading file ${testFile}`);    
     test("Removing file if it exists", () => {
