@@ -26,11 +26,7 @@ _Describe what actually happened instead_.
 
 ### Environment
 
-When thef bug occurred what environment where you using the **gepper** extension on?
-#### Versions
-
- - gepper extension: 
- - VS Code version: 1.?.?
+When the bug occurred what environment where you using the **gepper** extension on?
 
 #### Operating system(s)
 
@@ -44,9 +40,17 @@ When thef bug occurred what environment where you using the **gepper** extension
     - [ ] Other
 
  - [X] Other.. what?
+ 
+#### VS Code version
+ 
+ <!-- In VS Code select "Help" > "About", then click on "Copy" and paste the text here -->
+ 
+#### gepper extension version
+ 
+ <!-- In VS Code select "View" > "Extensions", then type sheller and "Copy" and paste the version number here -->
+
 
 ### Additional information
 
 _Feel free to attach a screenshot_.
 
-<!-- In VS Code select "Help" > "About", then click on "Copy" and paste the text here -->
