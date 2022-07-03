@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -24,6 +24,7 @@
     ],
     "keywords": [
         "c++",
+        "CMake",
         "cpp",
         "guttih",
         "tern"
@@ -48,11 +49,11 @@
         "snippets": [
             {
                 "language": "cpp",
-                "path": "./snippets/class.json"
+                "path": "./snippets/cpp/class.json"
             },
             {
                 "language": "cmake",
-                "path": "./snippets/cmake.json"
+                "path": "./snippets/cmake/cmake.json"
             }
         ],
         "menus": {

@@ -33,14 +33,24 @@ You can configure what files created will contain.  Use content commands (tokens
 
 * `cpp.gepper.shellExecute.OnSave.Command`: Command to run after saving .h or a .cpp file.
 
-## List of all snippets
+## Snippet lists
 
 **Prefix** is what you type to select the desired snippet.
 
+### C++ snippets
+
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
+| class,<br>class header,<br>class deceleration | Class deceleration | Class deceleration in a header file |
+| class cpp,<br>class implementation,<br>class source | class Implementation | Class implementation for a source file |
 | getterAndSetter | Add local class variable | Add class variable with getter and setter |
-| set variable,<br>add variable | Hello CMakeFiles world | Create a variable |
+| CamelCase to SnakeCase | Convert string to SNAKE_CASE | Converts CameCaseWord to CAME_CASE_WORD |
+
+### CMake snippets
+
+| Prefix | Title | Description |
+|:-------|:------|:------------|
+| set variable,<br>add variable | Declare a CMake variable | Add a variable |
 | Gepper: GoogleTest Create Project | Create a GoogleTest CMake Project for your repository | Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located |
 | Gepper: GoogleTest Add Sub Executable Project | Add a GoogleTest CMake child executable | Add a GoogleTest Test Application to an existing parent application. |
 

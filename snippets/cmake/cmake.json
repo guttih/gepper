@@ -1,8 +1,8 @@
 {
-    "Hello CMakeFiles world": {
+    "Declare a CMake variable": {
         "prefix": ["set variable", "add variable"],
         "body": ["    set(${1:varName} ${2:varValue})"],
-        "description": "Create a variable"
+        "description": "Add a variable"
     },
     "Create a GoogleTest CMake Project for your repository": {
         "prefix": "Gepper: GoogleTest Create Project",
