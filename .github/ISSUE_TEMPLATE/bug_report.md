@@ -26,7 +26,7 @@ _Describe what actually happened instead_.
 
 ### Environment
 
-When the bug occurred what environment where you using the **gepper** extension on?
+_When the bug occurred what environment where you using the **gepper** extension on_?
 
 #### Operating system(s)
 
