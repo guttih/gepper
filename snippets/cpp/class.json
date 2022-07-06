@@ -42,13 +42,15 @@
     "Add local class variable": {
         "prefix": "getterAndSetter",
         "body": [
-            "    ${1:int} m_${2:varName};",
-            "    $1 get${2/(^[a-z])/${1:/upcase}/}(){ ",
-            "        return m_$2; ",
-            "    }",
-            "    void set${2/(^[a-z])/${1:/upcase}/}($1 value){ ",
-            "        m_$2 = value; ",
-            "    }\n"
+            "${1:int} m_${2:varName};",
+            "$1 get${2/(^[a-z])/${1:/upcase}/}() const",
+            "{ ",
+            "    return m_$2; ",
+            "}",
+            "void set${2/(^[a-z])/${1:/upcase}/}(const $1 value)",
+            "{",
+            "    m_$2 = value; ",
+            "}\n"
         ],
         "description": "Add class variable with getter and setter"
     },

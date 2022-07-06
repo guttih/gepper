@@ -1,30 +1,48 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
+// import * as vscode from "vscode";
+import * as fs from "fs";
+import {
+    workspace,
+    ExtensionContext,
+    window,
+    ViewColumn,
+    commands,
+    Uri,
+    TextDocument,
+    FileSystemProvider,
+    OpenDialogOptions,
+    OutputChannel,
+} from "vscode";
 import { ClassCreator, OpenAfterClassCreation } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
 import { Executioner } from "./executioner";
-
+import { Downloader, UrlFileLinker } from "./downloader";
+import path = require("path");
+import { DiskFunctions } from "./diskFunctions";
+import { resolve } from "path";
+import { rejects } from "assert";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "gepper" is now active!');
+    let outputChannel: OutputChannel | null = null;
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
 
-    let onSaveCppFile = vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+    let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {
         // if (document.languageId === "yourid" && document.uri.scheme === "file") {
         if (document.languageId === "cpp") {
             // console.log(`${document.fileName} saved!`);
             // let bla = vscode.env.shell;
             const configPropertyPath = "cpp.gepper.shellExecute.OnSave.Command";
-            const cmd = vscode.workspace.getConfiguration().get<string>(configPropertyPath);
+            const cmd = workspace.getConfiguration().get<string>(configPropertyPath);
             if (cmd) {
                 Executioner.run(Executioner.replaceTokens(cmd, document.fileName)).catch((err) => {
-                    vscode.window.showErrorMessage(`Error running onSave command: \n${cmd}`, {
+                    window.showErrorMessage(`Error running onSave command: \n${cmd}`, {
                         detail: `\n\nError:${JSON.stringify(err, null, 2)}\nChange the command in settings by searching for:\n${configPropertyPath} `,
                         modal: true,
                     });
@@ -39,22 +57,22 @@ export function activate(context: vscode.ExtensionContext) {
         }
         const maker = new ClassCreator(String(className), dir);
         if (!maker.saveClassFiles()) {
-            vscode.window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir()}"!`);
+            window.showErrorMessage(`Unable to create Class "${className} in directory ${maker.getDir()}"!`);
             return null;
         }
 
         switch (maker.getRawClassCreatedShowFile()) {
             case OpenAfterClassCreation.headerFile:
-                vscode.workspace.openTextDocument(maker.getHeaderFileName(true)).then((doc) => {
-                    vscode.window.showTextDocument(doc, {
-                        viewColumn: vscode.ViewColumn.Active,
+                workspace.openTextDocument(maker.getHeaderFileName(true)).then((doc) => {
+                    window.showTextDocument(doc, {
+                        viewColumn: ViewColumn.Active,
                     });
                 });
                 break;
             case OpenAfterClassCreation.sourceFile:
-                vscode.workspace.openTextDocument(maker.getImplementationFileName(true)).then((doc) => {
-                    vscode.window.showTextDocument(doc, {
-                        viewColumn: vscode.ViewColumn.Active,
+                workspace.openTextDocument(maker.getImplementationFileName(true)).then((doc) => {
+                    window.showTextDocument(doc, {
+                        viewColumn: ViewColumn.Active,
                     });
                 });
                 break;
@@ -62,8 +80,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         return maker;
     };
-    let fnCreateClass = vscode.commands.registerCommand("gepper.createClass", async () => {
-        let className: string | undefined = await vscode.window.showInputBox({
+    let fnCreateClass = commands.registerCommand("gepper.createClass", async () => {
+        let className: string | undefined = await window.showInputBox({
             title: "What is the name of your class",
             placeHolder: "ClassName",
             prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
@@ -72,8 +90,8 @@ export function activate(context: vscode.ExtensionContext) {
         createNewClass(className);
     });
 
-    let fnCreateClassInFolder = vscode.commands.registerCommand("gepper.createClassInFolder", async (context) => {
-        let className: string | undefined = await vscode.window.showInputBox({
+    let fnCreateClassInFolder = commands.registerCommand("gepper.createClassInFolder", async (context) => {
+        let className: string | undefined = await window.showInputBox({
             title: "What is the name of your class",
             placeHolder: "ClassName",
             prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
@@ -82,7 +100,142 @@ export function activate(context: vscode.ExtensionContext) {
         createNewClass(className, context.path);
     });
 
-    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile);
+    let createProject = async (projectRoot: Uri, context: any) => {
+        return new Promise<string>(async (resolve, rejects) => {
+            console.log(projectRoot.fsPath);
+            if (!DiskFunctions.dirExists(projectRoot.fsPath)) {
+                const msg = "No project project directory selected, quitting";
+                window.showErrorMessage(msg);
+                rejects(msg);
+            }
+            const prefix = "https://raw.githubusercontent.com/guttih/sandbox/classer-googletest";
+            const list: Array<UrlFileLinker> | null = await Downloader.downloadFileList(
+                Uri.parse(`${prefix}/cppDirFileList.txt`),
+                Uri.parse(`${prefix}/cpp`),
+                projectRoot
+            );
+            if (!list) {
+                const msg = "Unable to download project file list!";
+                window.showErrorMessage(msg);
+                rejects(msg);
+            } else {
+                if (outputChannel === null) {
+                    outputChannel = window.createOutputChannel("gepper create project");
+                }
+                outputChannel.clear();
+                outputChannel.show(false);
+                let msg:string;
+                msg =`*************************************************************************\n`;
+                msg+=`*                                                                       *\n`;
+                msg+=`*    Creating C++ CMake project with CTests and GoogleTests examples    *\n`;
+                msg+=`*                                                                       *\n`;
+                msg+=`*************************************************************************\n\n`;
+                outputChannel?.append(msg);
+                await Downloader.downloadFileCollection(list, outputChannel)
+                    .then((downloadCount) => {
+                        let msg: string;
+                        if (downloadCount === list.length) {
+                            let pad:string = " ".repeat(downloadCount.toString().length/2);
+                            msg = `\n ${pad}${downloadCount} files created.\n\n Project created successfully at ${DiskFunctions.getDirectoryFromFilePath(projectRoot.fsPath)}/`;
+                            // window.showInformationMessage(msg);
+                        } else {
+                            msg = `Error creating project in ${projectRoot},\ņ  only ${downloadCount} of ${list.length} files where created`;
+                            window.showErrorMessage(msg);
+                        }
+                        outputChannel?.append(`${msg}\n`);
+                    })
+                    .catch(() => {
+                        window.showErrorMessage(`Error downloading files.`);
+                    });
+            }
+        });
+    };
+
+    let fnCreateCMakeProject = commands.registerCommand("gepper.createCMakeProject", async (context) => {
+        let answer = await window.showWarningMessage("Are you you  sure you want to create a new C++ GoogleTest project here?", "Yes", "No");
+        if (answer === "Yes") {
+            if (!workspace.workspaceFolders || !DiskFunctions.dirExists(workspace.workspaceFolders[0].uri.fsPath)) {
+                window
+                    .showOpenDialog({
+                        canSelectMany: false,
+                        canSelectFolders: true,
+                        canSelectFiles: false,
+                        openLabel: "Select project directory",
+                    })
+                    .then(async (fileUri) => {
+                        if (fileUri && fileUri[0]) {
+                            await createProject(fileUri[0], context);
+                        }
+                    });
+            } else {
+                await createProject(workspace.workspaceFolders[0].uri, context);
+            }
+        }
+
+        // var uri =     "https://github.com/guttih/sandbox/blob/main/cpp/main.cpp";
+        //https://github.com/guttih/sandbox/blob/2e63e95d3afff98d9f06f99d69b79f511bd23cd5/cppDirFilelist.txt
+        // Downloader.fetchAndSaveFile(a.toString(), "/home/gudjon");
+
+        // try {
+        //     const prefix = "https://raw.githubusercontent.com/guttih/sandbox/classer-googletest";
+        //     const list: Array<UrlFileLinker> | null = await Downloader.downloadFileList(
+        //         Uri.parse(`${prefix}/cppDirFileList.txt`),
+        //         Uri.parse(prefix),
+        //         projectRoot
+        //     );
+        //     if (!list){
+        //         window.showErrorMessage(`Unable to download project file list!`);
+        //         return;
+        //     }
+
+        //     console.log(JSON.stringify(list, null, 4));
+        // let directoryFileList = await Downloader.fetchContent(Uri.parse(`${prefix}/cppDirFileList.txt`));
+        // console.log(directoryFileList);
+        // let fileList: Array<string> = directoryFileList.split("\n");
+        // let urlList = fileList.filter((item) => item.length > 1).forEach((filePath) => (filePath = `${prefix}${filePath.substring(1)}`));
+
+        // const projectRoot = workspace.workspaceFolders[0].uri.fsPath;
+        // console.log(projectRoot);
+        // // fs.mkdir(`${projectRoot}/foo/ba/rar`, { recursive: true }, (err: NodeJS.ErrnoException | null, path?: string) => {
+        // //     if (err ) {
+        // //         console.error(err);
+        // //     } else {
+        // //         console.log(`Created dir: ${path}`);
+        // //     }
+        // // });
+        // let ret = fs.mkdirSync(`${projectRoot}/foo/ba/rar`, { recursive: true });
+        // let ret2 = fs.writeFileSync(`${projectRoot}/foo/ba/rar/test.txt`, "minn texti\nog ný lína", "utf-8");
+        // // fs.mkdirSync
+        // // const projectRoot = workspace.workspaceFolders[0].uri.fsPath;
+        // // if (path.resolve(relativePath) === relativePath)
+        // // relativePath = relativePath.substring(projectRoot.length).replace(/\\/g, "/");
+        // // const fsp = new FileSystemProvider();
+        // console.log(urlList);
+        // } catch (err) {
+        //     window.showErrorMessage(`Downloading ${err} failed! Please make sure URL is valid.`);
+        // }
+
+        // try {
+        //     const doc = await vscode.workspace.openTextDocument(uri);
+        //     let lines=[];
+        //     lines.push("", uri.toString());
+        //     // for (let i = 0; i < ranges.length; i++) {
+        //     //     const {
+        //     //         start: { line },
+        //     //     } = ranges[i];
+        //     //     this._appendLeading(doc, line, ranges[i - 1]);
+        //     //     this._appendMatch(doc, line, ranges[i], uri);
+        //     //     this._appendTrailing(doc, line, ranges[i + 1]);
+        //     // }
+        // } catch (err) {
+        //     vscode.window.showErrorMessage(`Failed to load '${uri.toString()}'\n\n${String(err)}`, {
+        //         detail: `\n\nError:${JSON.stringify(err, null, 2)}`,
+        //         modal: true,
+        //     });
+        // }
+    });
+
+    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile, fnCreateCMakeProject);
     // vscode.window.showInformationMessage("Gepper is loaded");
 }
 

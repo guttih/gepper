@@ -54,5 +54,15 @@ You can configure what files created will contain.  Use content commands (tokens
 | Gepper: GoogleTest Create Project | Create a GoogleTest CMake Project for your repository | Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located |
 | Gepper: GoogleTest Add Sub Executable Project | Add a GoogleTest CMake child executable | Add a GoogleTest Test Application to an existing parent application. |
 
+### .gitignore snippets
+
+| Prefix| Title | Description |
+|:------|:------|:------------|
+| cmake | CMake project  .gitignore | Make git ignore all files that are re-creatable in CMake projects |
+| c++,<br>cpp | C++ project .gitignore | Make git ignore all files that are re-creatable in C++ projects |
+| cmake & c++,<br>cmake & cpp | CMake C++ project .gitignore | Make git ignore all files that are re-creatable in C++ CMake projects |
+| cmake & c++ & vscode,<br>cmake & cpp & vscode | CMake C++ project in vscode .gitignore | Make git ignore all files that are re-creatable in C++ CMake projects including Visual Studio Code configuration files. |
+| vscode,<br>Visual Studio Code | Visual Studio Code .gitignore | Ignore most of Visual Studio Code configuration files |
+
 
 [Top](#gepper-readme)
