@@ -1,6 +1,6 @@
 {
-    "Class deceleration": {
-        "prefix": ["class","class header","class deceleration"],
+    "Class declaration": {
+        "prefix": ["class","class header","class declaration"],
         "body": [
             "// File: $1.h created: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
             "#ifndef _${1/([a-z]+)(?=[A-Z])|([A-Z])(?=[A-Z])|([A-Z][a-z]+)(?=$)|([A-Z][a-z]+)|([a-z]+)(?=$)/${1:/upcase}${1:+_}$2${2:+_}${3:/upcase}${4:/upcase}${4:+_}${5:/upcase}/g}__H_",
@@ -19,7 +19,7 @@
             "",
             "#endif\n"
         ],
-        "description": "Class deceleration in a header file"
+        "description": "Class declaration in a header file"
     },
     "class Implementation": {
         "prefix": ["class cpp","class implementation","class source"],

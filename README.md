@@ -3,6 +3,7 @@
 Gepper is a C++ helper extension which includes snippets and adding classes.
 
 ## Features
+ - **Create a new CMake C++ Project** Includes CTest and GoogleTest examples.
  - **Quickly create a class** Right-click the explorer window and select from the context menu `Create a new C++ Class`
  - **Create a class in selected directory** Right-click folder in explorer window and create a class inside that folder.
  - **Run a command on save** Execute a shell command specified by you, each time you save a .cpp or a .h file.
@@ -17,12 +18,12 @@ This extension contributes the following settings:
 ### Class creation
 
 #### Directory
-Where shall the class be created.
+Default location, where class be created if you do not select a specific folder.
 * `cpp.gepper.classPath`: Where should classes be created, default is working directory.
 
 #### Content
 
-You can configure what files created will contain.  Use content commands (tokens) to create your preferred content. When you open the settings (you can look for gepper) you will see explanations on what each command does.  File naming schema can also be configured.
+You can configure what generated files created will contain.  Use content commands (tokens) to create your preferred content. When you open the settings (you can look for gepper) you will see explanations on what each command does.  File naming schema can also be configured.
 
 * `cpp.gepper.classHeaderTemplate`: Content of a created header file for a class.
 * `cpp.gepper.classImplementationTemplate`: Content of your created source file for a class
@@ -41,7 +42,7 @@ You can configure what files created will contain.  Use content commands (tokens
 
 | Prefix  | Title | Description |
 |:--------|:------|:------------|
-| class,<br>class header,<br>class deceleration | Class deceleration | Class deceleration in a header file |
+| class,<br>class header,<br>class declaration | Class declaration | Class declaration in a header file |
 | class cpp,<br>class implementation,<br>class source | class Implementation | Class implementation for a source file |
 | getterAndSetter | Add local class variable | Add class variable with getter and setter |
 | CamelCase to SnakeCase | Convert string to SNAKE_CASE | Converts CameCaseWord to CAME_CASE_WORD |

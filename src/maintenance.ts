@@ -96,7 +96,7 @@ export class Maintenance {
         if (!newContent === null) {
             return false;
         }
-        
+
         return DiskFunctions.writeToFile(filename, String(newContent));
     }
     static updateAllTokenPropertyDescriptions(packageJson: any): Boolean {
@@ -111,16 +111,19 @@ export class Maintenance {
         let executionMdDesc: string = Maintenance.makeAvailableCommandMarkdownDescription(
             Maintenance.getDetailedExecutionInfo(allExecutionTokens, true)
         );
-        const startOfLink:string = " [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md";
-        const readLinkFunc =`${startOfLink}#class-creation---functional-tokens)`;
-        const readLinkFile =`${startOfLink}#on-save-command---functional-tokens)`;
+        const startOfLink: string = " [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md";
+        const readLinkFunc = `${startOfLink}#class-creation---functional-tokens)`;
+        const readLinkFile = `${startOfLink}#on-save-command---functional-tokens)`;
         // let executionMdDesc: string = Maintenance.makeAvailableCommandMarkdownDescription(Maintenance.getDetailedInfo(allExecutionTokens, true));
 
         if (
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classHeaderTemplate",
-                Maintenance.makeTokenFunctionDescription("### Class Template for header file content (.h)", `${templateFunctionDescription}${readLinkFunc}`)
+                Maintenance.makeTokenFunctionDescription(
+                    "### Class Template for header file content (.h)",
+                    `${templateFunctionDescription}${readLinkFunc}`
+                )
             )
         ) {
             return false;
@@ -129,7 +132,10 @@ export class Maintenance {
             !Maintenance.updateJsonPropertyDescription(
                 packageJson,
                 "cpp.gepper.classImplementationTemplate",
-                Maintenance.makeTokenFunctionDescription("### Class Template for source file content (.cpp)", `${templateFunctionDescription}${readLinkFunc}`)
+                Maintenance.makeTokenFunctionDescription(
+                    "### Class Template for source file content (.cpp)",
+                    `${templateFunctionDescription}${readLinkFunc}`
+                )
             )
         ) {
             return false;
@@ -242,7 +248,7 @@ export class Maintenance {
             : Maintenance.joinDescription(info.token, desc, ".", minTokenWidth);
     }
     static makeMarkdownTableRow(column1: string, column2: string) {
-        return `| ${ TokenWorker.isToken(column1)? `\`${column1}\`` : column1} | ${column2} |\n`;
+        return `| ${TokenWorker.isToken(column1) ? `\`${column1}\`` : column1} | ${column2} |\n`;
     }
     static joinDescription(prefix: string, message: string, postfix: string = "", minTokenWidth?: Number) {
         if (minTokenWidth !== undefined) {

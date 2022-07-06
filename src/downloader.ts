@@ -19,15 +19,15 @@ export class Downloader {
      * @param collection Array of files to be downloaded
      * @returns Number of downloaded files
      */
-    static zeroPad = (pad:string, num:number, places:number) => String(num).padStart(places, pad);
+    static zeroPad = (pad: string, num: number, places: number) => String(num).padStart(places, pad);
     static downloadFileCollection(collection: Array<UrlFileLinker>, outputChannel: OutputChannel | null = null) {
         return new Promise<number>(async (resolve, reject) => {
             if (!collection || collection.length < 1) {
                 reject(0);
             }
             let downloadCount = 0;
-            const maxLen=collection.length.toString().length;
-            for (let i = 0; i <collection.length ; i++) {
+            const maxLen = collection.length.toString().length;
+            for (let i = 0; i < collection.length; i++) {
                 const fileMap = collection[i];
                 await this.fetchContent(collection[i].remoteUrl).then((fileContent) => {
                     // console.log(`Writing    : ${collection[i].localFile.fsPath}`);
@@ -38,7 +38,9 @@ export class Downloader {
                         console.log(`Error Writing    : ${collection[i].localFile.fsPath}`);
                     }
 
-                    outputChannel?.append(`(${this.zeroPad("0",i+1, maxLen)}/${collection.length}) ${fileMap.localFile.fsPath} ${success? "":": error"}\n`);
+                    outputChannel?.append(
+                        `(${this.zeroPad("0", i + 1, maxLen)}/${collection.length}) ${fileMap.localFile.fsPath} ${success ? "" : ": error"}\n`
+                    );
                     outputChannel?.show(false);
                 });
             }

@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from "vscode";
-import * as fs from "fs";
 import {
     workspace,
     ExtensionContext,
@@ -18,16 +17,14 @@ import { ClassCreator, OpenAfterClassCreation } from "./classCreator";
 import { TokenWorker } from "./tokenWorker";
 import { Executioner } from "./executioner";
 import { Downloader, UrlFileLinker } from "./downloader";
-import path = require("path");
 import { DiskFunctions } from "./diskFunctions";
-import { resolve } from "path";
-import { rejects } from "assert";
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "gepper" is now active!');
+
     let outputChannel: OutputChannel | null = null;
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
@@ -124,19 +121,21 @@ export function activate(context: ExtensionContext) {
                 }
                 outputChannel.clear();
                 outputChannel.show(false);
-                let msg:string;
-                msg =`*************************************************************************\n`;
-                msg+=`*                                                                       *\n`;
-                msg+=`*    Creating C++ CMake project with CTests and GoogleTests examples    *\n`;
-                msg+=`*                                                                       *\n`;
-                msg+=`*************************************************************************\n\n`;
+                let msg: string;
+                msg = `*************************************************************************\n`;
+                msg += `*                                                                       *\n`;
+                msg += `*    Creating C++ CMake project with CTests and GoogleTests examples    *\n`;
+                msg += `*                                                                       *\n`;
+                msg += `*************************************************************************\n\n`;
                 outputChannel?.append(msg);
                 await Downloader.downloadFileCollection(list, outputChannel)
                     .then((downloadCount) => {
                         let msg: string;
                         if (downloadCount === list.length) {
-                            let pad:string = " ".repeat(downloadCount.toString().length/2);
-                            msg = `\n ${pad}${downloadCount} files created.\n\n Project created successfully at ${DiskFunctions.getDirectoryFromFilePath(projectRoot.fsPath)}/`;
+                            let pad: string = " ".repeat(downloadCount.toString().length / 2);
+                            msg = `\n ${pad}${downloadCount} files created.\n\n Project created successfully at ${DiskFunctions.getDirectoryFromFilePath(
+                                projectRoot.fsPath
+                            )}/`;
                             // window.showInformationMessage(msg);
                         } else {
                             msg = `Error creating project in ${projectRoot},\ņ  only ${downloadCount} of ${list.length} files where created`;
@@ -171,72 +170,9 @@ export function activate(context: ExtensionContext) {
                 await createProject(workspace.workspaceFolders[0].uri, context);
             }
         }
-
-        // var uri =     "https://github.com/guttih/sandbox/blob/main/cpp/main.cpp";
-        //https://github.com/guttih/sandbox/blob/2e63e95d3afff98d9f06f99d69b79f511bd23cd5/cppDirFilelist.txt
-        // Downloader.fetchAndSaveFile(a.toString(), "/home/gudjon");
-
-        // try {
-        //     const prefix = "https://raw.githubusercontent.com/guttih/sandbox/classer-googletest";
-        //     const list: Array<UrlFileLinker> | null = await Downloader.downloadFileList(
-        //         Uri.parse(`${prefix}/cppDirFileList.txt`),
-        //         Uri.parse(prefix),
-        //         projectRoot
-        //     );
-        //     if (!list){
-        //         window.showErrorMessage(`Unable to download project file list!`);
-        //         return;
-        //     }
-
-        //     console.log(JSON.stringify(list, null, 4));
-        // let directoryFileList = await Downloader.fetchContent(Uri.parse(`${prefix}/cppDirFileList.txt`));
-        // console.log(directoryFileList);
-        // let fileList: Array<string> = directoryFileList.split("\n");
-        // let urlList = fileList.filter((item) => item.length > 1).forEach((filePath) => (filePath = `${prefix}${filePath.substring(1)}`));
-
-        // const projectRoot = workspace.workspaceFolders[0].uri.fsPath;
-        // console.log(projectRoot);
-        // // fs.mkdir(`${projectRoot}/foo/ba/rar`, { recursive: true }, (err: NodeJS.ErrnoException | null, path?: string) => {
-        // //     if (err ) {
-        // //         console.error(err);
-        // //     } else {
-        // //         console.log(`Created dir: ${path}`);
-        // //     }
-        // // });
-        // let ret = fs.mkdirSync(`${projectRoot}/foo/ba/rar`, { recursive: true });
-        // let ret2 = fs.writeFileSync(`${projectRoot}/foo/ba/rar/test.txt`, "minn texti\nog ný lína", "utf-8");
-        // // fs.mkdirSync
-        // // const projectRoot = workspace.workspaceFolders[0].uri.fsPath;
-        // // if (path.resolve(relativePath) === relativePath)
-        // // relativePath = relativePath.substring(projectRoot.length).replace(/\\/g, "/");
-        // // const fsp = new FileSystemProvider();
-        // console.log(urlList);
-        // } catch (err) {
-        //     window.showErrorMessage(`Downloading ${err} failed! Please make sure URL is valid.`);
-        // }
-
-        // try {
-        //     const doc = await vscode.workspace.openTextDocument(uri);
-        //     let lines=[];
-        //     lines.push("", uri.toString());
-        //     // for (let i = 0; i < ranges.length; i++) {
-        //     //     const {
-        //     //         start: { line },
-        //     //     } = ranges[i];
-        //     //     this._appendLeading(doc, line, ranges[i - 1]);
-        //     //     this._appendMatch(doc, line, ranges[i], uri);
-        //     //     this._appendTrailing(doc, line, ranges[i + 1]);
-        //     // }
-        // } catch (err) {
-        //     vscode.window.showErrorMessage(`Failed to load '${uri.toString()}'\n\n${String(err)}`, {
-        //         detail: `\n\nError:${JSON.stringify(err, null, 2)}`,
-        //         modal: true,
-        //     });
-        // }
     });
 
     context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile, fnCreateCMakeProject);
-    // vscode.window.showInformationMessage("Gepper is loaded");
 }
 
 // this method is called when your extension is deactivated
