@@ -2,6 +2,15 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.5.0]
+
+### Added
+- Command *Create new C++ CMake project with GoogleTest*. This command with create a C++ CMake boiler plate project, add one hello world library and one hello world application.
+Included are CTest and GoogleTest examples.
+- Added .gitignore specific snippets for *Visual Studio Code*, C*++* and *CMake*.
+  
+-
+
 ## [0.2.0]
 
 ### Added

@@ -1,7 +1,7 @@
 import * as cp from "child_process";
 import * as path from "path";
 import { basename, dirname } from "path";
-import {TokenWorker, ExecutionToken} from "./tokenWorker";
+import { TokenWorker, ExecutionToken } from "./tokenWorker";
 export interface ExecException extends Error {
     cmd?: string | undefined;
     killed?: boolean | undefined;
@@ -11,20 +11,17 @@ export interface ExecException extends Error {
     stderr: string | null;
 }
 
-
-
 export class Executioner {
-    static replaceTokens(text:string, fullFilename:string):string {
-        const dir  = dirname(fullFilename);
+    static replaceTokens(text: string, fullFilename: string): string {
+        const dir = dirname(fullFilename);
         const name = basename(fullFilename);
-        let ret:string;
+        let ret: string;
         ret = TokenWorker.replaceAll(text, TokenWorker.createToken(ExecutionToken.filePath), dir);
-        ret = TokenWorker.replaceAll(ret,  TokenWorker.createToken(ExecutionToken.fileName), name);
+        ret = TokenWorker.replaceAll(ret, TokenWorker.createToken(ExecutionToken.fileName), name);
         return ret;
     }
     static run(command: string) {
-
-        return new Promise<ExecException|null>((resolve: any, reject: any) => {
+        return new Promise<ExecException | null>((resolve: any, reject: any) => {
             cp.exec(command, (err, stdout, stderr) => {
                 console.log("stdout: " + stdout);
                 console.log("stderr: " + stderr);

@@ -64,7 +64,7 @@ module.exports.bump = function bump(workspaceDir){
     var newContent = JSON.stringify(packageContent, null, 4);
     try { fs.writeFileSync(filePackage, newContent); } catch(err) { console.error(err);console.log('Unable to write to file package.json');return null; }
 
-    newContent = JSON.stringify(packageLockContent, null, 2);
+    newContent = JSON.stringify(packageLockContent, null, 4);
     try { fs.writeFileSync(filePackageLock, newContent); } catch(err) { console.error(err);console.log('Unable to write to file package-lock.json');return null; }
       
     return newVersion;
