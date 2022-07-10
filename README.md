@@ -13,7 +13,7 @@ This extension is in the early stages so very few snippets have been created.
 
 ## Extension Settings
 
-This extension contributes the following settings:
+This extension contributes the following [settings]:
 
 ### Class creation
 
@@ -67,3 +67,6 @@ You can configure what generated files created will contain.  Use content comman
 
 
 [Top](#gepper-readme)
+
+
+[settings]: ./docs/settings.md
