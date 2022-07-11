@@ -1,11 +1,11 @@
 {
     "Declare a CMake variable": {
-        "prefix": ["set variable", "add variable"],
+        "prefix": ["set", "set variable", "add variable"],
         "body": ["    set(${1:varName} ${2:varValue})"],
         "description": "Add a variable"
     },
     "Create a GoogleTest CMake Project for your repository": {
-        "prefix": "Gepper: GoogleTest Create Project",
+        "prefix": "create googleTest Project",
         "body": [
             "cmake_minimum_required(VERSION 3.14)",
             "",
@@ -64,7 +64,7 @@
         "description": "Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located"
     },
     "Add a GoogleTest CMake child executable": {
-        "prefix": "Gepper: GoogleTest Add Sub Executable Project",
+        "prefix": "create sub executable project",
         "body": [
             "",
             "# Project name: ${1:${TM_DIRECTORY/.*[\\\\|\\/]+(.*)/$1/}}",

@@ -48,8 +48,8 @@
             },
             {
                 "command": "gepper.createCMakeProject",
-                "title": "Create new C++ CMake project with GoogleTest",
-                "shortTitle": "New CMake Large Project",
+                "title": "Create new C++ Project example with GoogleTest",
+                "shortTitle": "New C++ Large Project Example",
                 "category": "CMake"
             }
         ],
