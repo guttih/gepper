@@ -1,14 +1,18 @@
 import { Range, Selection, TextDocument, TextLine } from "vscode";
 
+export interface Pos {
+    start: number;
+    end: number;
+}
+
 export class ClassInformation {
     name: string | null = null;
     body: string | null = null;
     lines: TextLine[] | null = null;
-    
+
     constructor(document: TextDocument | undefined, selection: Selection | undefined) {
-        
         this.extractNameAndBody(document, selection);
-        
+
         if (this.isValid()) {
             console.log(`Name: ${this.name}`);
             console.log(`Body: ${this.body}`);
@@ -89,15 +93,89 @@ export class ClassInformation {
 
         this.body = selectedAndBelowText.substring(iTotalStart + 1, endOf - 1).trim();
     }
-    getFunctions(){
-        let text=this.body?.replace(/private:|public:|protected:|/g, "");
+    getFunctions(removeImplementedInHeader: boolean = false) {
+        if (!this.body) {
+            return null;
+        }
+
+        let text = this.body.replace(/private:|public:|protected:|/g, "");
+        let i = 0;
+        // todo:remove all function bodies
+        let pos: Pos | null = text.indexOf("{") > -1 ? { start: 0, end: 0 } : null;
+        let tmp;
+        while (pos) {
+            pos = this.getBracketIndex(text);
+
+            if (pos) {
+                if (removeImplementedInHeader) {
+                    i = text.lastIndexOf(";", pos.start);
+                    if (i > -1) {
+                        pos.start = i + 1;
+                    } else {
+                        pos.start = 0;
+                    }
+                    // i = pos.start;
+                    // while (i > 0) {
+                    //     if (text[i] === ";") {
+                    //         break;
+                    //     } else {
+                    //         i--;
+                    //     }
+                    // }
+                    //we need to jump back until we find beginning of file or ;
+                }
+                tmp = text.substring(0, pos.start);
+                text = tmp + text.substring(pos.end);
+            }
+        }
         let elements = text?.split(";");
-        elements=elements?.map(e=>e.trim());
-        let functions = elements?.filter(e => e.indexOf(')')>0);
+        elements = elements?.map((e) => e.trim());
+        let functions = elements?.filter((e) => e.indexOf(")") > 0);
         return functions;
     }
 
     isValid() {
         return this.name !== null && this.body !== null;
+    }
+
+    getBracketIndex(text: string, iStart: number = -1): Pos | null {
+        const iOpen = text.indexOf("{");
+        if (iOpen < 1) {
+            return null;
+        }
+        if (iStart > -1 && text[iStart] !== "{") {
+            return null; //incorrect index of iStart
+        } else {
+            iStart = text.indexOf("{");
+        }
+        let iTotalStart = iStart;
+        let indent = 1,
+            i = 0,
+            endOf = -1,
+            iEnd = text.indexOf("}");
+        let tmp;
+        while (indent > 0) {
+            tmp = text.substring(i);
+            iStart = tmp.indexOf("{");
+            iEnd = tmp.indexOf("}");
+            if (iStart > -1 && iStart < iEnd) {
+                indent++;
+                i += iStart + 1;
+            } else if ((iEnd > -1 && iEnd < iStart) || iEnd > -1) {
+                indent--;
+                i += iEnd + 1;
+                if (indent === 1) {
+                    endOf = i;
+                    break;
+                }
+            } else {
+                i = -1;
+                break;
+            }
+        }
+        return {
+            start: iTotalStart,
+            end: endOf,
+        };
     }
 }
