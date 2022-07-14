@@ -33,11 +33,18 @@
         "onCommand:gepper.createClass",
         "onCommand:gepper.createClassInFolder",
         "onCommand:gepper.createCMakeProject",
+        "onCommand:gepper.addClassOperators",
+        "onCommand:gepper.classImplementMissingFunctions",
         "onLanguage:cpp"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "gepper.addClassOperators",
+                "title": "Add operators to C++ Class",
+                "category": "cpp"
+            },
             {
                 "command": "gepper.createClass",
                 "title": "Create a new C++ Class"
@@ -51,6 +58,10 @@
                 "title": "Create new C++ Project example with GoogleTest",
                 "shortTitle": "New C++ Large Project Example",
                 "category": "CMake"
+            },
+            {
+                "command": "gepper.classImplementMissingFunctions",
+                "title": "XImplement missing class functions"
             }
         ],
         "snippets": [
@@ -76,6 +87,12 @@
                 {
                     "command": "gepper.createClassInFolder",
                     "when": "explorerResourceIsFolder"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "gepper.classImplementMissingFunctions"
+                    ,"when": "gepper.showEditClassMenu"
                 }
             ]
         },

@@ -3,7 +3,7 @@ import { exists } from "fs";
 import { test } from "mocha";
 import * as path from "path";
 import { join } from "path";
-import { DiskFunctions } from "../../diskFunctions";
+import { DiskFunctions } from "../../DiskFunctions";
 
 let dirProject = path.dirname(__dirname);
 let index = dirProject.indexOf("/gepper/");

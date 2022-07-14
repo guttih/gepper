@@ -13,23 +13,23 @@ import {
     OpenDialogOptions,
     OutputChannel,
 } from "vscode";
-import { ClassCreator, OpenAfterClassCreation } from "./classCreator";
-import { TokenWorker } from "./tokenWorker";
-import { Executioner } from "./executioner";
-import { Downloader, UrlFileLinker } from "./downloader";
-import { DiskFunctions } from "./diskFunctions";
+import { ClassCreator, OpenAfterClassCreation } from "./ClassCreator";
+import { TokenWorker } from "./TokenWorker";
+import { Executioner } from "./Executioner";
+import { Downloader, UrlFileLinker } from "./Downloader";
+import { DiskFunctions } from "./DiskFunctions";
+import { ClassWorker } from "./ClassWorker";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-
+    window.showInformationMessage("activating  gepper");
     let outputChannel: OutputChannel | null = null;
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-
     let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {
         // if (document.languageId === "yourid" && document.uri.scheme === "file") {
         if (document.languageId === "cpp") {
@@ -47,6 +47,8 @@ export function activate(context: ExtensionContext) {
             }
         }
     });
+
+    commands.executeCommand("setContext", "gepper.showEditClassMenu", true);
 
     const createNewClass = (className: string | undefined, dir?: string): ClassCreator | null => {
         if (TokenWorker.isOnlySpaces(className)) {
@@ -95,6 +97,10 @@ export function activate(context: ExtensionContext) {
         });
 
         createNewClass(className, context.path);
+    });
+    let fnClassImplementMissingFunctions = commands.registerCommand("gepper.classImplementMissingFunctions", async (context) => {
+        window.showInformationMessage("fnClassImplementMissingFunctions");
+        ClassWorker.findMissingImplementations(context);
     });
 
     let createProject = async (projectRoot: Uri, context: any) => {
@@ -150,6 +156,43 @@ export function activate(context: ExtensionContext) {
         });
     };
 
+    let fnAddClassOperators = commands.registerCommand("gepper.addClassOperators", async (context) => {
+        window
+            .showQuickPick(
+                [
+                    {
+                        label: "Class Assignment operator",
+                        description: " Class1 = Class2",
+                        picked: false,
+                        detail: "Og hér er mikill deteill um allann þennan operator og svoleiðis stuff",
+                    },
+                    {
+                        label: "Class Equality operator",
+                        description: " Class1 == Class2",
+                        picked: true,
+                        detail: "asdfas Bull og sull dúddi dfasdf",
+                    },
+                ],
+                {
+                    title: "Add operators to a C++ Class",
+                    placeHolder: "Please select which operators to you want to add!",
+                    canPickMany: true,
+                }
+            )
+            .then((data) => {
+                if (data) {
+                    let msg = "Todo: Now I should add these operators:\n";
+                    if (data.length < 1) {
+                        msg = "Nothing selected!";
+                    } else {
+                        data.forEach((e) => (msg += `  - ${e.label}\n`));
+                    }
+                    window.showInformationMessage(msg, { modal: true });
+                }
+
+                console.log(data);
+            });
+    });
     let fnCreateCMakeProject = commands.registerCommand("gepper.createCMakeProject", async (context) => {
         let answer = await window.showWarningMessage("Are you you  sure you want to create a new C++ GoogleTest project here?", "Yes", "No");
         if (answer === "Yes") {
@@ -172,7 +215,14 @@ export function activate(context: ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(fnCreateClass, fnCreateClassInFolder, onSaveCppFile, fnCreateCMakeProject);
+    context.subscriptions.push(
+        fnCreateClass,
+        fnCreateClassInFolder,
+        onSaveCppFile,
+        fnCreateCMakeProject,
+        fnAddClassOperators,
+        fnClassImplementMissingFunctions
+    );
 }
 
 // this method is called when your extension is deactivated

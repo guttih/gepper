@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
-import { TokenWorker, FunctionTokenName, FunctionalTokenInfo, ExecutionTokenInfo, ExecutionToken } from "./tokenWorker";
-import { DiskFunctions } from "./diskFunctions";
+import { TokenWorker, FunctionTokenName, FunctionalTokenInfo, ExecutionTokenInfo, ExecutionToken } from "./TokenWorker";
+import { DiskFunctions } from "./DiskFunctions";
 
 export interface TokenDetails {
     name: string;
