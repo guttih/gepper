@@ -1,7 +1,8 @@
 import * as cp from "child_process";
 import * as path from "path";
 import { basename, dirname } from "path";
-import { TokenWorker, ExecutionToken } from "./tokenWorker";
+import { TokenWorker, ExecutionToken } from "./TokenWorker";
+
 export interface ExecException extends Error {
     cmd?: string | undefined;
     killed?: boolean | undefined;

@@ -6,7 +6,7 @@ import * as fs from "fs";
 // import * as http from "http";
 import * as https from "https";
 import { ExtensionContext, OutputChannel, Uri, window } from "vscode";
-import { DiskFunctions } from "./diskFunctions";
+import { DiskFunctions } from "./DiskFunctions";
 
 export interface UrlFileLinker {
     remoteUrl: Uri;

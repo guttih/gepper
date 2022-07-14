@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import { test } from "mocha";
-import { TokenWorker, FunctionTokenName } from "../../tokenWorker";
+import { TokenWorker, FunctionTokenName } from "../../TokenWorker";
 
 const before =
     "#ifndef {{__CLASS_NAME_UPPER__}}_H\n\t\t#define {{__CLASS_NAME_UPPER__}}_H\n\t\t\\t\t\n\t\tclass {{__CLASS_NAME__}}\n\t\t{\n\t\tpublic:\n\t\t	{{__CLASS_NAME__}}();\n\t\t	~{{__CLASS_NAME__}}();\n\t\t\n\t\tprivate:\n\t\t\n\t\t};\n\t\t\n\t\t#endif";

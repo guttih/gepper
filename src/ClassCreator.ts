@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { DiskFunctions } from "./diskFunctions";
-import { TokenWorker, FunctionTokenName } from "./tokenWorker";
+import { DiskFunctions } from "./DiskFunctions";
+import { TokenWorker, FunctionTokenName } from "./TokenWorker";
 import { platform } from "process";
+
 
 export enum OpenAfterClassCreation  {
     headerFile="Header file",

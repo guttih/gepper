@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { test } from "mocha";
-import { Maintenance } from "../../maintenance";
-import { FunctionTokenName, TokenWorker } from "../../tokenWorker";
+import { Maintenance } from "../../Maintenance";
+import { FunctionTokenName, TokenWorker } from "../../TokenWorker";
 
 suite("Maintenance", () => {
     test("Updating all token property descriptions in package.json", () => {

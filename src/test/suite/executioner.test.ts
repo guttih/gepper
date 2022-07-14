@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { test } from "mocha";
 import * as path from "path";
-import { Executioner } from "../../executioner";
+import { Executioner } from "../../Executioner";
 
 // const name = path.basename(__filename);
 // const filePackage=path.join(dirProject, name);
