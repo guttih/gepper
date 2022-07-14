@@ -23,7 +23,7 @@ export class ClassWorker {
         if (!info.isValid()) {
             return;
         }
-        let classFunctions=info.getFunctions();
+        let classFunctions=info.getFunctions(true);
         console.log(classFunctions);
     }
 
