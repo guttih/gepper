@@ -1,24 +1,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from "vscode";
-import {
-    workspace,
-    ExtensionContext,
-    window,
-    ViewColumn,
-    commands,
-    Uri,
-    TextDocument,
-    FileSystemProvider,
-    OpenDialogOptions,
-    OutputChannel,
-} from "vscode";
+import { workspace, ExtensionContext, window, ViewColumn, commands, Uri, TextDocument, OutputChannel, TextEditor, Selection } from "vscode";
 import { ClassCreator, OpenAfterClassCreation } from "./ClassCreator";
 import { TokenWorker } from "./TokenWorker";
 import { Executioner } from "./Executioner";
 import { Downloader, UrlFileLinker } from "./Downloader";
 import { DiskFunctions } from "./DiskFunctions";
 import { ClassWorker } from "./ClassWorker";
+import { ClassInformation } from "./ClassInformation";
+let handleMenuShow: NodeJS.Timeout;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -99,11 +90,46 @@ export function activate(context: ExtensionContext) {
         createNewClass(className, context.path);
     });
     let fnClassImplementMissingFunctions = commands.registerCommand("gepper.classImplementMissingFunctions", async (context) => {
+        //Make ClassInformation
         window.showInformationMessage("fnClassImplementMissingFunctions");
-        ClassWorker.findMissingImplementations(context);
+        let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
+        if (!info.isValid()) {
+            window.showWarningMessage(`Could not parse class in file`);
+            return;
+        }
+        let missing = info.getFunctions(true);
+        if (!missing || missing.length < 1) {
+            return; //nothing to do
+        }
+
+        const ret = ClassWorker.findImplementationFile(info.name, window.activeTextEditor?.document.fileName);
+        if (ret === null) {
+            window.showWarningMessage("Could not find a file to put the implementations to");
+            return;
+        }
+        let doc:TextDocument;
+        if (typeof ret === 'string') {
+            //We did not get an open document, but we got the location of one, so we will need to open it
+            doc = await workspace.openTextDocument(ret);
+
+        } else {
+            doc = ret;
+        }
+        window.showTextDocument(doc, {
+            viewColumn: ViewColumn.Active,
+        });
+        info.setImplementation(doc);
+        let headFuncs = info.getFunctions(true);
+        let implFuncs = info.getImplementedFunctions();
+        let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs);
+        
+        ClassWorker.addDeclarations(missingFuncs, info, doc);
+  
+        
+        console.log(`This doc is selected: ${doc.fileName}`);
     });
 
-    let createProject = async (projectRoot: Uri, context: any) => {
+    const createProject = async (projectRoot: Uri, context: any) => {
         return new Promise<string>(async (resolve, rejects) => {
             console.log(projectRoot.fsPath);
             if (!DiskFunctions.dirExists(projectRoot.fsPath)) {
@@ -148,6 +174,7 @@ export function activate(context: ExtensionContext) {
                             window.showErrorMessage(msg);
                         }
                         outputChannel?.append(`${msg}\n`);
+                        resolve(msg);
                     })
                     .catch(() => {
                         window.showErrorMessage(`Error downloading files.`);
@@ -215,6 +242,26 @@ export function activate(context: ExtensionContext) {
         }
     });
 
+    const shouldShowMenuItemAddMissingImplementations = (editor: TextEditor, document: TextDocument | null, selections: readonly Selection[]) => {
+        console.log("shouldShowMenuItemAddMissingImplementations");
+        let selection: Selection | undefined = selections && selections.length > 0 ? selections[0] : undefined;
+        let shouldShowMenu = false;
+        if (editor) {
+            shouldShowMenu = ClassWorker.isInsideClass(editor.document, selection);
+            if (!shouldShowMenu) {
+                //no class selected, let's try to select the first one
+                let selection = ClassWorker.selectFirstClassDeceleration(editor.document);
+                console.log(`shouldShowMenuItemAddMissingImplementations selected first class: ${selection !== null}`);
+                if (selection) {
+                    shouldShowMenu = ClassWorker.isInsideClass(editor.document, selection);
+                }
+
+                clearTimeout(handleMenuShow);
+                shouldShowMenuItemAddMissingImplementations(editor, document, selections);
+                handleMenuShow = setTimeout(() => shouldShowMenuItemAddMissingImplementations(editor, document, selections), 30);
+            }
+        }
+    };
     context.subscriptions.push(
         fnCreateClass,
         fnCreateClassInFolder,
@@ -224,6 +271,3 @@ export function activate(context: ExtensionContext) {
         fnClassImplementMissingFunctions
     );
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}
