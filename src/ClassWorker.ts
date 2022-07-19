@@ -5,27 +5,32 @@ import { DiskFunctions } from "./DiskFunctions";
 import { ClassCreator } from "./ClassCreator";
 
 export class ClassWorker {
-    static addDeclarations(funcs: string[] | null, info: ClassInformation, doc: TextDocument) {
-        if (!funcs || !info || !doc) {
-            return;
+    /**
+     *
+     * @param funcs functions create implementations for
+     * @returns empty string if noting to implement otherwise string containing implementation code
+     */
+    static createImplementationsFromDeclarations(funcs: string[] | null): string {
+        if (!funcs) {
+            return "";
         }
-        const addFunctionNotImplemented = (funcDecl: string):string=>{
-            let name=funcDecl.substring(0, funcDecl.indexOf('('));
+
+        const addFunctionNotImplemented = (funcDecl: string): string => {
+            let name = funcDecl.substring(0, funcDecl.indexOf("("));
             let i = name.lastIndexOf(" ");
-            if (i>-1){
-                name=name.substring(i+1);
+            if (i > -1) {
+                name = name.substring(i + 1);
             }
 
-            return `{\n    throw "${name} is not implemented yet.";\n}\n`;
+            return `{\n    throw "${name} is not implemented yet.";\n}`;
         };
 
-        let addMe;
+        let ret = "";
         for (let i = 0; i < funcs.length; i++) {
             // current = funcs[i].replace(/;$/, '');
-            addMe=funcs[i] + "\n"+addFunctionNotImplemented(funcs[i]);
-            console.log(addMe);
-
+            ret += `\n${funcs[i]}\n${addFunctionNotImplemented(funcs[i])}`;
         }
+        return ret;
     }
     static msg(msg: string) {
         window.showInformationMessage("ClassWorker:" + msg);

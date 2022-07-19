@@ -73,18 +73,31 @@ export class ClassInformation {
      * Finds missing function decelerations.
      * @param headFuncs Array of header decelerations
      * @param implFuncs Array of header decelerations
-     * @returns All deceleration not existing in implFuncs.  If no functions are missing, null is returned 
+     * @param functionPrefix String containing prefix to be inserted in front of each function name
+     * @returns All deceleration not existing in implFuncs.  If no functions are missing, null is returned
      */
-    getMissingFunctions(headFuncs: string[] | null, implFuncs: string[]): string[] | null {
+    getMissingFunctions(headFuncs: string[] | null, implFuncs: string[], functionPrefix: string | null = null): string[] | null {
+        if (!headFuncs || headFuncs.length < 1 || !implFuncs) {
+            return null;
+        }
         //removing all variable names
-        let headNoVars = headFuncs?.map((e) => this.removeFunctionVariableNames(e));
-        let implNoVars = implFuncs?.map((e) => this.removeFunctionVariableNames(e));
+        let headNoVars = headFuncs.map((e) => this.removeFunctionVariableNames(e));
+        let implNoVars = implFuncs.map((e) => this.removeFunctionVariableNames(e));
 
         //find which are not implemented
-        let notImplemented = headNoVars?.filter((e) => !implNoVars?.includes(e));
+        let notImplemented = headNoVars.filter((e) => !implNoVars.includes(e));
 
         //Restoring variable names for all functions which are not implemented
-        let toBeImplemented = headFuncs?.filter((e) => notImplemented?.includes(this.removeFunctionVariableNames(e)));
+        let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(this.removeFunctionVariableNames(e)));
+        if (functionPrefix && functionPrefix.length > 0) {
+            toBeImplemented = toBeImplemented.map((e) => {
+                let name = e.substring(0, e.indexOf("("));
+                let iSpace = name.lastIndexOf(" ");
+                name=name.substring(iSpace+1);
+                e=e.replace(name, `${functionPrefix}${name}`);
+                return e;
+            });
+        }
         return toBeImplemented && toBeImplemented.length > 0 ? toBeImplemented : null;
     }
 
