@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from "vscode";
-import { workspace, ExtensionContext, window, ViewColumn, commands, Uri, TextDocument, OutputChannel, TextEditor, Selection } from "vscode";
+import { workspace, ExtensionContext, window, ViewColumn, commands, Uri, TextDocument, OutputChannel, TextEditor, Selection, Position } from "vscode";
 import { ClassCreator, OpenAfterClassCreation } from "./ClassCreator";
 import { TokenWorker } from "./TokenWorker";
 import { Executioner } from "./Executioner";
@@ -107,25 +107,39 @@ export function activate(context: ExtensionContext) {
             window.showWarningMessage("Could not find a file to put the implementations to");
             return;
         }
-        let doc:TextDocument;
-        if (typeof ret === 'string') {
+        let doc: TextDocument;
+        if (typeof ret === "string") {
             //We did not get an open document, but we got the location of one, so we will need to open it
             doc = await workspace.openTextDocument(ret);
-
         } else {
             doc = ret;
         }
-        window.showTextDocument(doc, {
-            viewColumn: ViewColumn.Active,
-        });
         info.setImplementation(doc);
         let headFuncs = info.getFunctions(true);
         let implFuncs = info.getImplementedFunctions();
-        let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs);
-        
-        ClassWorker.addDeclarations(missingFuncs, info, doc);
-  
-        
+        let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs, `${info.name}::`);
+
+        let code = ClassWorker.createImplementationsFromDeclarations(missingFuncs);
+        await window.showTextDocument(doc, {
+            viewColumn: ViewColumn.Active,
+        });
+        const editor = window.activeTextEditor;
+        const docLengthBefore = doc.lineCount;
+        if (code.length > 0 && editor) {
+            editor
+                .edit((editBuilder) => {
+                    editBuilder.insert(new Position(docLengthBefore, 0), code);
+                })
+                .then((success) => {
+                    if (!success) {
+                        return;
+                    }
+                    let last = doc.lineAt(doc.lineCount-1);
+                    editor.selection=new Selection(new Position(docLengthBefore, 0), last.range.end);
+                    editor.revealRange(editor.selection);
+                });
+        }
+
         console.log(`This doc is selected: ${doc.fileName}`);
     });
 
