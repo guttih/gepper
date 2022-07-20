@@ -52,8 +52,8 @@ You can configure what generated files created will contain.  Use content comman
 | Prefix | Title | Description |
 |:-------|:------|:------------|
 | set,<br>set variable,<br>add variable | Declare a CMake variable | Add a variable |
-| Gepper: GoogleTest Create Project | Create a GoogleTest CMake Project for your repository | Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located |
-| Gepper: GoogleTest Create Sub Executable Project | Add a GoogleTest CMake child executable | Add a GoogleTest Test Application to an existing parent application. |
+| create googleTest Project | Create a GoogleTest CMake Project for your repository | Creates a GoogleTest CMake Project intended to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located |
+| create sub executable project | Add a GoogleTest CMake child executable | Add a GoogleTest Test Application to an existing parent application. |
 
 ### .gitignore snippets
 
