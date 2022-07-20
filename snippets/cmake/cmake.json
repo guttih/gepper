@@ -61,7 +61,7 @@
             "# Tutorial: https://github.com/google/googletest/blob/main/docs/quickstart-cmake.md",
             ""
         ],
-        "description": "Creates a GoogleTest CMake Project intented to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located"
+        "description": "Creates a GoogleTest CMake Project intended to be added to a file called CMakeLists.txt.  This is the entry point to GoogleTests, and all other GoogleTest projects should be in sub-directories of where this project is located"
     },
     "Add a GoogleTest CMake child executable": {
         "prefix": "create sub executable project",
