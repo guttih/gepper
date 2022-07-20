@@ -1,6 +1,4 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-// import * as vscode from "vscode";
+
 import {
     workspace,
     ExtensionContext,
@@ -11,7 +9,6 @@ import {
     TextDocument,
     OutputChannel,
     TextEditor,
-    Selection,
     TextDocumentChangeEvent,
     TextEditorSelectionChangeEvent,
 } from "vscode";
@@ -21,20 +18,15 @@ import { Executioner } from "./Executioner";
 import { Downloader, UrlFileLinker } from "./Downloader";
 import { DiskFunctions } from "./DiskFunctions";
 import { ClassWorker } from "./ClassWorker";
-let handleMenuShow: NodeJS.Timeout;
+import { MenuEditorHandler } from "./MenuEditorHandler";
+let editorMenuHandler: MenuEditorHandler = new MenuEditorHandler();
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    window.showInformationMessage("activating  gepper");
+
+    window.showInformationMessage("Activating  gepper");
     let outputChannel: OutputChannel | null = null;
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
+
     let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {
-        // if (document.languageId === "yourid" && document.uri.scheme === "file") {
         if (document.languageId === "cpp") {
             const configPropertyPath = "cpp.gepper.shellExecute.OnSave.Command";
             const cmd = workspace.getConfiguration().get<string>(configPropertyPath);
@@ -48,22 +40,16 @@ export function activate(context: ExtensionContext) {
             }
         }
     });
-    //onDidChangeActiveTextEditor
+
     let fnOnDidChangeActiveTextEditor = window.onDidChangeActiveTextEditor((editor: TextEditor | undefined) => {
-        console.log("onDidChangeActiveTextEditor");
-        shouldShowMenuItemAddMissingImplementations(editor ? editor : null, null, undefined);
+        editorMenuHandler.selectVisibleMenuItems(editor ? editor : null, null, undefined);
     });
     let fnOnDidChangeTextEditorSelection = window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
-        console.log("onDidChangeTextEditorSelection");
-        shouldShowMenuItemAddMissingImplementations(e.textEditor, null, undefined);
+        editorMenuHandler.selectVisibleMenuItems(e.textEditor, null, undefined);
     });
     let fnOnDidChangeTextDocument = workspace.onDidChangeTextDocument((e: TextDocumentChangeEvent) => {
-        console.log("onDidChangeTextDocument");
-        shouldShowMenuItemAddMissingImplementations(null, e.document, undefined);
+        editorMenuHandler.selectVisibleMenuItems(null, e.document, undefined);
     });
-
-    // commands.executeCommand("setContext", "gepper.showAddClassOperators", false);
-    // commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
 
     const createNewClass = (className: string | undefined, dir?: string): ClassCreator | null => {
         if (TokenWorker.isOnlySpaces(className)) {
@@ -230,46 +216,6 @@ export function activate(context: ExtensionContext) {
         }
     });
 
-    const shouldShowMenuItemAddMissingImplementationsWorker = (
-        editor: TextEditor | null,
-        document: TextDocument | null,
-        selections: readonly Selection[] | undefined
-    ) => {
-        let selection: Selection | undefined = selections && selections.length > 0 ? selections[0] : undefined;
-        let shouldShowMenu = false;
-        if (editor) {
-            document = editor.document;
-        }
-        if (!document || document.languageId !== "cpp") {
-            commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
-            return;
-        }
-
-        shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
-        if (!shouldShowMenu) {
-            //no class selected, let's try to select the first one
-            let selection = ClassWorker.selectFirstClassDeceleration(document);
-            if (selection) {
-                shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
-            }
-            if (shouldShowMenu) {
-                ClassWorker.implementMissingClassFunctions(true, false).then((funcArr) => {
-                    commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", funcArr && funcArr.length > 0 ? true : false);
-                });
-            } else {
-                commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
-            }
-        }
-    };
-    const shouldShowMenuItemAddMissingImplementations = (
-        editor: TextEditor | null,
-        document: TextDocument | null,
-        selections: readonly Selection[] | undefined
-    ) => {
-        clearTimeout(handleMenuShow);
-        handleMenuShow = setTimeout(() => shouldShowMenuItemAddMissingImplementationsWorker(editor, document, selections), 30);
-    };
-    shouldShowMenuItemAddMissingImplementations(window.activeTextEditor ? window.activeTextEditor : null, null, undefined);
     context.subscriptions.push(
         fnCreateClass,
         fnCreateClassInFolder,
@@ -281,4 +227,7 @@ export function activate(context: ExtensionContext) {
         fnOnDidChangeTextEditorSelection,
         fnOnDidChangeActiveTextEditor
     );
+
+    //Run the menu check, at extension activation.
+    editorMenuHandler.selectVisibleMenuItems(window.activeTextEditor ? window.activeTextEditor : null, null, undefined);
 }

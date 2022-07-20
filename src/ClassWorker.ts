@@ -45,7 +45,7 @@ export class ClassWorker {
             window.showWarningMessage(`Could not parse class in file`);
             return null;
         }
-        let missing = info.getFunctions(true);
+        let missing = info.getHeaderFunctions(true);
         if (!missing || missing.length < 1) {
             return null; //nothing to do
         }
@@ -66,7 +66,7 @@ export class ClassWorker {
             doc = ret;
         }
         info.setImplementation(doc);
-        let headFuncs = info.getFunctions(true);
+        let headFuncs = info.getHeaderFunctions(true);
         let implFuncs = info.getImplementedFunctions();
         let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs, `${info.name}::`);
         if (!addToImplementationDocument) {
@@ -103,7 +103,7 @@ export class ClassWorker {
         if (this.isInsideClassLine(headerFile, selection)) {
             info = new ClassInformation(headerFile, selection);
         } else {
-            info = new ClassInformation(headerFile, this.selectFirstClassDeceleration(window.activeTextEditor?.document));
+            info = new ClassInformation(headerFile, ClassInformation.selectFirstClassDeclaration(window.activeTextEditor?.document));
         }
 
         return info;
@@ -120,8 +120,8 @@ export class ClassWorker {
         const i = current.indexOf("class ");
         return i > -1;
     }
-    static selectFirstClassDeceleration(document: TextDocument | undefined): Selection | undefined {
-        return ClassInformation.selectFirstClassDeceleration(document);
+    static selectFirstClassDeclaration(document: TextDocument | undefined): Selection | undefined {
+        return ClassInformation.selectFirstClassDeclaration(document);
     }
     static findImplementationFile(className: string | null, fileName: string | undefined): TextDocument | string | null {
         if (!className || !fileName) {
@@ -165,6 +165,12 @@ export class ClassWorker {
         return testFile;
     }
 
+    /**
+     * Searches if at least one class implementation exist in a file on disk
+     * @param className Name of class to check for
+     * @param testFile path to a file on disk to search
+     * @returns true if one or more class implementation for given class name exists in the file, otherwise false
+     */
     static doesFileImplementClass(className: string, testFile: string): boolean {
         if (DiskFunctions.fileExists(testFile)) {
             const content = DiskFunctions.readFromFile(testFile);

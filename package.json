@@ -96,7 +96,7 @@
                 },
                 {
                     "command": "gepper.addClassOperators",
-                    "when": "gepper.showAddClassOperators"
+                    "when": "gepper.showClassAddOperators"
                 }
             ]
         },
