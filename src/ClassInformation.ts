@@ -5,6 +5,11 @@ export interface Pos {
     end: number;
 }
 
+export enum ClassAccess {
+    public = "public:",
+    private = "private:",
+    protected = "protected:",
+}
 export class ClassInformation {
     name: string | null = null;
     body: string | null = null;
@@ -19,7 +24,7 @@ export class ClassInformation {
      * @param func Valid function declaration
      * @returns on success, the declaration without any variable names, on error returns func unchanged.
      */
-    removeFunctionVariableNames(func: string): string {
+    static removeFunctionVariableNames(func: string): string {
         let startBracket = func.indexOf("(");
         let endBracket = func.indexOf(")", startBracket + 1);
         if (startBracket < 0 || endBracket < 0 || startBracket >= endBracket) {
@@ -71,19 +76,19 @@ export class ClassInformation {
      * @param functionPrefix String containing prefix to be inserted in front of each function name
      * @returns All declaration not existing in implFuncs.  If no functions are missing, null is returned
      */
-    getMissingFunctions(headFuncs: string[] | null, implFuncs: string[], functionPrefix: string | null = null): string[] | null {
+    getMissingFunctions(headFuncs: string[] | null, implFuncs: string[], functionPrefix: string | null = null): string[] {
         if (!headFuncs || headFuncs.length < 1 || !implFuncs) {
-            return null;
+            return [];
         }
         //removing all variable names
-        let headNoVars = headFuncs.map((e) => this.removeFunctionVariableNames(e));
-        let implNoVars = implFuncs.map((e) => this.removeFunctionVariableNames(e));
+        let headNoVars = headFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e));
+        let implNoVars = implFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e));
 
         //find which are not implemented
         let notImplemented = headNoVars.filter((e) => !implNoVars.includes(e));
 
         //Restoring variable names for all functions which are not implemented
-        let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(this.removeFunctionVariableNames(e)));
+        let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(ClassInformation.removeFunctionVariableNames(e)));
         if (functionPrefix && functionPrefix.length > 0) {
             toBeImplemented = toBeImplemented.map((e) => {
                 let name = e.substring(0, e.indexOf("("));
@@ -93,19 +98,19 @@ export class ClassInformation {
                 return e;
             });
         }
-        return toBeImplemented && toBeImplemented.length > 0 ? toBeImplemented : null;
+        return toBeImplemented && toBeImplemented.length > 0 ? toBeImplemented : [];
     }
 
     setImplementation(doc: TextDocument) {
         if (!this.name || this.name.length < 1 || !doc) {
             this.cppBody = null;
         }
-        this.cppBody =ClassInformation.removeWhiteSpacesFromText(doc.getText(), true, false).trim();
+        this.cppBody = ClassInformation.removeWhiteSpacesFromText(doc.getText(), true, false).trim();
     }
 
-    getHeaderFunctions(removeImplementedInHeader: boolean = false) {
+    getHeaderFunctions(removeImplementedInHeader: boolean = false): string[] {
         if (!this.body) {
-            return null;
+            return [];
         }
 
         let text = this.body.replace(/private:|public:|protected:|/g, "");
@@ -130,9 +135,9 @@ export class ClassInformation {
             }
         }
         text = ClassInformation.removeWhiteSpacesFromText(text, false, false);
-        let elements = text?.split(";");
-        elements = elements?.map((e) => e.trim());
-        let functions = elements?.filter((e) => e.indexOf(")") > 0);
+        let elements = text.split(";");
+        elements = elements.map((e) => e.trim());
+        let functions = elements.filter((e) => e.indexOf(")") > 0);
         return functions;
     }
     getImplementedFunctionsWorker(body: string | null): string[] {
@@ -234,7 +239,7 @@ export class ClassInformation {
     }
 
     /**
-     * Searches for the first class declaration in a document and returns a selection where 
+     * Searches for the first class declaration in a document and returns a selection where
      * start and end position of that class is selected.
      * @param document Document to search
      * @returns Start and end position of the first class declaration
@@ -277,13 +282,12 @@ export class ClassInformation {
      * @param iStart specify the exact position of the first starting token
      * @returns start position of the first starting token and end position of the last starting token
      */
-    getOpenAndCloseTokenPos(text: string, tokenOpen:string="{", tokenClose:string="}", iStart: number = -1): Pos | null {
-        
+    getOpenAndCloseTokenPos(text: string, tokenOpen: string = "{", tokenClose: string = "}", iStart: number = -1): Pos | null {
         const iOpen = text.indexOf(tokenOpen);
         if (iOpen < 1) {
             return null;
         }
-        if (iStart > -1 && text.indexOf(tokenOpen,iStart) !== iStart) {
+        if (iStart > -1 && text.indexOf(tokenOpen, iStart) !== iStart) {
             return null; //incorrect index of iStart iStart should point to first bracketOpen
         } else {
             iStart = text.indexOf(tokenOpen);

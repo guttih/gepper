@@ -35,8 +35,8 @@ export class MenuEditorHandler {
                 shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
             }
             if (shouldShowMenu) {
-                ClassWorker.implementMissingClassFunctions(true, false).then((funcArr) => {
-                    MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, funcArr && funcArr.length > 0 ? true : false);
+                ClassWorker.implementMissingClassFunctions(true, false).then((ret) => {
+                    MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, ret && ret.notImplemented && ret.notImplemented.length > 0 ? true : false);
                 });
             } else {
                 MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, false);
@@ -48,7 +48,7 @@ export class MenuEditorHandler {
         document: TextDocument | null,
         selections: readonly Selection[] | undefined
     ) {
-        MenuCommon.enableMenuItem(MenuContext.showClassAddOperators, false);
+        MenuCommon.enableMenuItem(MenuContext.showClassAddOperators, true);
 
     }
 }
