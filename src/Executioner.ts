@@ -1,5 +1,4 @@
 import * as cp from "child_process";
-import * as path from "path";
 import { basename, dirname } from "path";
 import { TokenWorker, ExecutionToken } from "./TokenWorker";
 

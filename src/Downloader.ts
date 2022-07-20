@@ -1,11 +1,7 @@
 "use strict";
 
-import { downloadDirToExecutablePath } from "@vscode/test-electron/out/util";
-import * as fs from "fs";
-// import * as mkdirp from "mkdirp";
-// import * as http from "http";
 import * as https from "https";
-import { ExtensionContext, OutputChannel, Uri, window } from "vscode";
+import { OutputChannel, Uri } from "vscode";
 import { DiskFunctions } from "./DiskFunctions";
 
 export interface UrlFileLinker {
@@ -30,7 +26,6 @@ export class Downloader {
             for (let i = 0; i < collection.length; i++) {
                 const fileMap = collection[i];
                 await this.fetchContent(collection[i].remoteUrl).then((fileContent) => {
-                    // console.log(`Writing    : ${collection[i].localFile.fsPath}`);
                     const success = DiskFunctions.writeToFile(fileMap.localFile.fsPath, fileContent, true);
                     if (success) {
                         downloadCount++;
@@ -95,7 +90,6 @@ export class Downloader {
         return await this.getRequest(uri.toString());
     }
     static getRequest(fileURL: string) {
-        console.log(`url: ${fileURL}`);
         return new Promise<string>((resolve, reject) => {
             const req = https.get(fileURL, (res) => {
                 res.setEncoding("utf8");

@@ -12,11 +12,6 @@ export class ClassInformation {
 
     constructor(document: TextDocument | undefined, selection: Selection | undefined) {
         this.extractNameAndBody(document, selection);
-
-        if (this.isValid()) {
-            console.log(`Name: ${this.name}`);
-            console.log(`Body: ${this.body}`);
-        }
     }
 
     /**
@@ -93,8 +88,8 @@ export class ClassInformation {
             toBeImplemented = toBeImplemented.map((e) => {
                 let name = e.substring(0, e.indexOf("("));
                 let iSpace = name.lastIndexOf(" ");
-                name=name.substring(iSpace+1);
-                e=e.replace(name, `${functionPrefix}${name}`);
+                name = name.substring(iSpace + 1);
+                e = e.replace(name, `${functionPrefix}${name}`);
                 return e;
             });
         }
