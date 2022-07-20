@@ -16,8 +16,8 @@ export class ClassInformation {
 
     /**
      * Removes variable names from function declaration
-     * @param func Valid function deceleration
-     * @returns on success, the deceleration without any variable names, on error returns func unchanged.
+     * @param func Valid function declaration
+     * @returns on success, the declaration without any variable names, on error returns func unchanged.
      */
     removeFunctionVariableNames(func: string): string {
         let startBracket = func.indexOf("(");
@@ -65,11 +65,11 @@ export class ClassInformation {
     }
 
     /**
-     * Finds missing function decelerations.
-     * @param headFuncs Array of header decelerations
-     * @param implFuncs Array of header decelerations
+     * Finds missing function declarations.
+     * @param headFuncs Array of header declarations
+     * @param implFuncs Array of header declarations
      * @param functionPrefix String containing prefix to be inserted in front of each function name
-     * @returns All deceleration not existing in implFuncs.  If no functions are missing, null is returned
+     * @returns All declaration not existing in implFuncs.  If no functions are missing, null is returned
      */
     getMissingFunctions(headFuncs: string[] | null, implFuncs: string[], functionPrefix: string | null = null): string[] | null {
         if (!headFuncs || headFuncs.length < 1 || !implFuncs) {
@@ -97,9 +97,45 @@ export class ClassInformation {
     }
 
     setImplementation(doc: TextDocument) {
-        this.cppBody = ClassInformation.linesToString(this.name, doc);
+        if (!this.name || this.name.length < 1 || !doc) {
+            this.cppBody = null;
+        }
+        this.cppBody =ClassInformation.removeWhiteSpacesFromText(doc.getText(), true, false).trim();
     }
-    extractFunctions(body: string | null): string[] {
+
+    getHeaderFunctions(removeImplementedInHeader: boolean = false) {
+        if (!this.body) {
+            return null;
+        }
+
+        let text = this.body.replace(/private:|public:|protected:|/g, "");
+        let i = 0;
+
+        let pos: Pos | null = text.indexOf("{") > -1 ? { start: 0, end: 0 } : null;
+        let tmp;
+        while (pos) {
+            pos = this.getOpenAndCloseTokenPos(text);
+
+            if (pos) {
+                if (removeImplementedInHeader) {
+                    i = text.lastIndexOf(";", pos.start);
+                    if (i > -1) {
+                        pos.start = i;
+                    } else {
+                        pos.start = 0;
+                    }
+                }
+                tmp = text.substring(0, pos.start);
+                text = tmp + ";" + text.substring(pos.end);
+            }
+        }
+        text = ClassInformation.removeWhiteSpacesFromText(text, false, false);
+        let elements = text?.split(";");
+        elements = elements?.map((e) => e.trim());
+        let functions = elements?.filter((e) => e.indexOf(")") > 0);
+        return functions;
+    }
+    getImplementedFunctionsWorker(body: string | null): string[] {
         if (!body || body.length < 1 || !body.includes(`${this.name}::`)) {
             return [];
         }
@@ -109,7 +145,7 @@ export class ClassInformation {
         let tmp, i;
         let pos: Pos | null = text.indexOf("{") > -1 ? { start: 0, end: 0 } : null;
         while (pos) {
-            pos = this.getBracketIndex(text);
+            pos = this.getOpenAndCloseTokenPos(text);
             if (pos) {
                 tmp = text.substring(0, pos.start);
                 text = tmp + text.substring(pos.end);
@@ -124,7 +160,7 @@ export class ClassInformation {
     }
 
     getImplementedFunctions(): string[] {
-        return this.extractFunctions(this.cppBody);
+        return this.getImplementedFunctionsWorker(this.cppBody);
     }
 
     static removeWhiteSpacesFromText(text: string, removeComments: boolean, removeEndLines: boolean): string {
@@ -133,66 +169,19 @@ export class ClassInformation {
             text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "");
         }
 
-        //removing white spaces and endlines
         if (removeEndLines) {
+            //removing white spaces and end-lines
             text = text.replace(/\s\s+/g, " ");
         } else {
-            //remove all extra tabs and spaces, and double endline
-            // text=text.replace(/(\r\n|\n\n|\r)/gm, "\n");
-            // text=text.replace(  /  +/g, " " );
-            // text=text.replace(  /\t+/g, " " );
-            // text=text.replace( /[  |\t]+/g, " " );
-
+            //removing white spaces and double-end-lines
             text = text.replace(/\n\s*\n/g, "\n");
-            // text = text.replace(/\t+/g, " ");
             text = text.replace(/[  |\t]+/g, " ");
         }
-
-        // text = text.replace(/\r?\n|\r/g, " ");
-        //replacing " :" and ": " with ":"
+        //remove spaces around ':' and spaces inside '(' and ')'
         text = text.replace(/\s:|:\s/g, ":");
         text = text.replace(/\(\s/g, "(");
         text = text.replace(/\s\)/g, ")");
         return text;
-    }
-    // static removeCommentsAndEndLines(text: string): string {
-    //     let ret = text.replace(/\s/g, " ").trim();
-
-    //     //remove comments
-    //     ret = ret.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "");
-
-    //     //removing white spaces and end lines
-    //     ret = ret.replace(/\s\s+/g, " ");
-    //     return ret;
-    // }
-
-    static linesToString(className: string | null, doc: TextDocument): string | null {
-        if (!className || className.length < 1 || !doc) {
-            return null;
-        }
-        return this.removeWhiteSpacesFromText(doc.getText(), true, false).trim();
-    }
-    static extractFunctionNames(className: string, text: string): string[] {
-        //find this.cppBody.includes(`${this.name}::`
-        //while found `${this.name}::`
-        //find '(
-        //remove found
-        let ret: string[] = [];
-        let prefixLen = `${className}::`.length;
-        let iFnName = text.indexOf(`${className}::`),
-            iBracketClose,
-            iBracketOpen = text.indexOf("(", iFnName);
-        while (iFnName > -1 && iBracketOpen > iFnName) {
-            iBracketClose = text.indexOf(")", iBracketOpen + 1);
-            if (iBracketClose < iFnName) {
-                break; //should not happen, but we could have syntax error
-            }
-
-            ret.push(text.substring(prefixLen + iFnName, iBracketOpen));
-            text = text.substring(iBracketClose);
-            (iFnName = text.indexOf(`${className}::`)), (iBracketOpen = text.indexOf("(", iFnName));
-        }
-        return ret;
     }
 
     extractNameAndBody(document: TextDocument | undefined, selection: Selection | undefined) {
@@ -238,13 +227,19 @@ export class ClassInformation {
         if (iOpen < 1) {
             return;
         }
-        let pos = this.getBracketIndex(selectedAndBelowText);
+        let pos = this.getOpenAndCloseTokenPos(selectedAndBelowText);
         if (pos) {
             this.body = selectedAndBelowText.substring(pos.start + 1, pos.end - 1).trim();
         }
     }
 
-    static selectFirstClassDeceleration(document: TextDocument | undefined): Selection | undefined {
+    /**
+     * Searches for the first class declaration in a document and returns a selection where 
+     * start and end position of that class is selected.
+     * @param document Document to search
+     * @returns Start and end position of the first class declaration
+     */
+    static selectFirstClassDeclaration(document: TextDocument | undefined): Selection | undefined {
         if (!document) {
             return undefined;
         }
@@ -269,63 +264,40 @@ export class ClassInformation {
         }
         return undefined;
     }
-    getFunctions(removeImplementedInHeader: boolean = false) {
-        if (!this.body) {
-            return null;
-        }
-
-        let text = this.body.replace(/private:|public:|protected:|/g, "");
-        let i = 0;
-
-        let pos: Pos | null = text.indexOf("{") > -1 ? { start: 0, end: 0 } : null;
-        let tmp;
-        while (pos) {
-            pos = this.getBracketIndex(text);
-
-            if (pos) {
-                if (removeImplementedInHeader) {
-                    i = text.lastIndexOf(";", pos.start);
-                    if (i > -1) {
-                        pos.start = i;
-                    } else {
-                        pos.start = 0;
-                    }
-                }
-                tmp = text.substring(0, pos.start);
-                text = tmp + ";" + text.substring(pos.end);
-            }
-        }
-        text = ClassInformation.removeWhiteSpacesFromText(text, false, false);
-        let elements = text?.split(";");
-        elements = elements?.map((e) => e.trim());
-        let functions = elements?.filter((e) => e.indexOf(")") > 0);
-        return functions;
-    }
-
     isValid() {
         return this.name !== null && this.body !== null;
     }
 
-    getBracketIndex(text: string, iStart: number = -1): Pos | null {
-        const iOpen = text.indexOf("{");
+    /**
+     * Searches for position of start and end tokens, where these tokens can be nested.
+     * Usually used for scanning for opening and closing of a bracket or a curly bracket.
+     * @param text text to scan
+     * @param tokenOpen starting token
+     * @param tokenClose ending token
+     * @param iStart specify the exact position of the first starting token
+     * @returns start position of the first starting token and end position of the last starting token
+     */
+    getOpenAndCloseTokenPos(text: string, tokenOpen:string="{", tokenClose:string="}", iStart: number = -1): Pos | null {
+        
+        const iOpen = text.indexOf(tokenOpen);
         if (iOpen < 1) {
             return null;
         }
-        if (iStart > -1 && text[iStart] !== "{") {
-            return null; //incorrect index of iStart
+        if (iStart > -1 && text.indexOf(tokenOpen,iStart) !== iStart) {
+            return null; //incorrect index of iStart iStart should point to first bracketOpen
         } else {
-            iStart = text.indexOf("{");
+            iStart = text.indexOf(tokenOpen);
         }
         let iTotalStart = iStart;
         let indent = 1,
             i = 0,
             endOf = -1,
-            iEnd = text.indexOf("}");
+            iEnd = text.indexOf(tokenClose);
         let tmp;
         while (indent > 0) {
             tmp = text.substring(i);
-            iStart = tmp.indexOf("{");
-            iEnd = tmp.indexOf("}");
+            iStart = tmp.indexOf(tokenOpen);
+            iEnd = tmp.indexOf(tokenClose);
             if (iStart > -1 && iStart < iEnd) {
                 indent++;
                 i += iStart + 1;
