@@ -286,7 +286,7 @@ export class ClassWorker {
                     picked: true,
                     detail: "Operator to copy all values from object B into object A",
                     data: {
-                        declaration: `${className}& operator=(const ${className}& rhs)`,
+                        declaration: `${className} &operator=(const ${className} &rhs)`,
                         implementation: "",
                     },
                 },
@@ -296,7 +296,7 @@ export class ClassWorker {
                     picked: true,
                     detail: "Operator to check if object A is equal to object B",
                     data: {
-                        declaration: `bool operator==(const ${className}& rhs)`,
+                        declaration: `bool operator==(const ${className} &rhs)`,
                         implementation: "",
                     },
                 },
@@ -306,7 +306,7 @@ export class ClassWorker {
                     picked: true,
                     detail: "Operator to check if object A is different than object B",
                     data: {
-                        declaration: `bool operator!=(const ${className}& rhs)`,
+                        declaration: `bool operator!=(const ${className} &rhs)`,
                         implementation: "{\n    return !( *this == rhs );\n}",
                     },
                 },
@@ -316,7 +316,7 @@ export class ClassWorker {
                     picked: false,
                     detail: "Operator to check if object A is greater than object B",
                     data: {
-                        declaration: `bool operator>(const ${className}& rhs)`,
+                        declaration: `bool operator>(const ${className} &rhs)`,
                         implementation: "",
                     },
                 },
@@ -326,7 +326,7 @@ export class ClassWorker {
                     picked: false,
                     detail: "Operator to check if object A is less than object B",
                     data: {
-                        declaration: `bool operator<(const ${className}& rhs)`,
+                        declaration: `bool operator<(const ${className} &rhs)`,
                         implementation: "",
                     },
                 },
@@ -336,7 +336,7 @@ export class ClassWorker {
                     picked: false,
                     detail: "Operator to check if object A is greater than or equal to object B",
                     data: {
-                        declaration: `bool operator>=(const ${className}& rhs)`,
+                        declaration: `bool operator>=(const ${className} &rhs)`,
                         implementation: "{\n    return *this > rhs || *this == rhs;\n}",
                     },
                 },
@@ -346,7 +346,7 @@ export class ClassWorker {
                     picked: false,
                     detail: "Operator to check if object A is less than or equal to object B",
                     data: {
-                        declaration: `bool operator<=(const ${className}& rhs)`,
+                        declaration: `bool operator<=(const ${className} &rhs)`,
                         implementation: "{\n    return *this < rhs || *this == rhs;\n}",
                     },
                 },
@@ -375,6 +375,7 @@ export class ClassWorker {
             let operatorsNotImplemented: PickItem[] = operators.filter(
                 (e) => headNoVars.indexOf(ClassInformation.removeFunctionVariableNames(e.data.declaration)) === -1
             );
+
             if (operatorsNotImplemented.length > 0) {
                 let picked = await ClassWorker.addClassOperatorsAskUser(operatorsNotImplemented);
                 if (picked && picked?.length > 0) {
@@ -382,7 +383,7 @@ export class ClassWorker {
                     let code = ClassWorker.createImplementationsFromDeclarations(
                         functionsToAdd.map((e) => {
                             return {
-                                declaration: e.declaration.replace(" operator", ` ${info.name}::operator`),
+                                declaration: ClassInformation.addPrefixToFunctionName(e.declaration, `${info.name}::`),
                                 implementation: e.implementation,
                             };
                         })
@@ -415,6 +416,7 @@ export class ClassWorker {
                     return rejects(false);
                 }
             } else {
+                window.showInformationMessage("All available operators already implemented.");
                 return resolve(true); //success if everything is already implemented
             }
         });

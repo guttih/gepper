@@ -12,19 +12,14 @@ export class MenuEditorHandler {
             this.displayAddOperators(editor, document, selections);
         }, 80);
     }
-    displayMenuItemAddMissingImplementations(
-        editor: TextEditor | null,
-        document: TextDocument | null,
-        selections: readonly Selection[] | undefined
-    ) {
+    isInsideClass(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined): boolean {
         let selection: Selection | undefined = selections && selections.length > 0 ? selections[0] : undefined;
         let shouldShowMenu = false;
         if (editor) {
             document = editor.document;
         }
         if (!document || document.languageId !== "cpp") {
-            MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, false);
-            return;
+            return false;
         }
 
         shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
@@ -34,21 +29,25 @@ export class MenuEditorHandler {
             if (selection) {
                 shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
             }
-            if (shouldShowMenu) {
-                ClassWorker.implementMissingClassFunctions(true, false).then((ret) => {
-                    MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, ret && ret.notImplemented && ret.notImplemented.length > 0 ? true : false);
-                });
-            } else {
-                MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, false);
-            }
         }
+        return shouldShowMenu;
     }
-    displayAddOperators(
-        editor: TextEditor | null,
-        document: TextDocument | null,
-        selections: readonly Selection[] | undefined
-    ) {
-        MenuCommon.enableMenuItem(MenuContext.showClassAddOperators, true);
+    displayMenuItemAddMissingImplementations(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined) {
+        if (!this.isInsideClass(editor, document, selections)) {
+            MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, false);
+            return;
+        }
 
+        ClassWorker.implementMissingClassFunctions(true, false).then((ret) => {
+            MenuCommon.enableMenuItem(
+                MenuContext.showClassImplementMissingFunctions,
+                ret && ret.notImplemented && ret.notImplemented.length > 0 ? true : false
+            );
+        });
+    }
+    displayAddOperators(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined) {
+        let show = this.isInsideClass(editor, document, selections);
+        MenuCommon.enableMenuItem(MenuContext.showClassAddOperators, show);
+        //todo: detect if all operators have been implemented, and if so do not show this menuItem
     }
 }

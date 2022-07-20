@@ -32,6 +32,8 @@ export class ClassInformation {
         }
         func = func.replace(/\s,|,\s/g, ",");
         func = func.replace(/\s=|=\s/g, "=");
+        func = func.replace(/\s&|&\s/g, "& ");
+        func = func.replace(/\s\*|\*\s/g, "* ");
 
         let i,
             iEnd = func.indexOf(",", startBracket + 1);
@@ -69,6 +71,22 @@ export class ClassInformation {
         return func; //error but returning original
     }
 
+    static addPrefixToFunctionName(declaration: string, functionPrefix: string | null): string {
+        if (functionPrefix && functionPrefix.length > 0) {
+            let ret;
+            let name = declaration.substring(0, declaration.indexOf("("));
+            let iSpace = name.lastIndexOf(" ");
+            if (["*", "&"].includes(name[iSpace + 1])) {
+                iSpace++;
+            }
+            name = name.substring(iSpace + 1);
+            ret = declaration.replace(name, `${functionPrefix}${name}`);
+            return ret;
+        } else {
+            return declaration;
+        }
+    }
+
     /**
      * Finds missing function declarations.
      * @param headFuncs Array of header declarations
@@ -91,11 +109,7 @@ export class ClassInformation {
         let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(ClassInformation.removeFunctionVariableNames(e)));
         if (functionPrefix && functionPrefix.length > 0) {
             toBeImplemented = toBeImplemented.map((e) => {
-                let name = e.substring(0, e.indexOf("("));
-                let iSpace = name.lastIndexOf(" ");
-                name = name.substring(iSpace + 1);
-                e = e.replace(name, `${functionPrefix}${name}`);
-                return e;
+                return ClassInformation.addPrefixToFunctionName(e, functionPrefix);
             });
         }
         return toBeImplemented && toBeImplemented.length > 0 ? toBeImplemented : [];

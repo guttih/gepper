@@ -2,6 +2,11 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.1]
+
+### Changed
+better detection when functions are not implemented and adding operators with space between type and ampersand instead of variable name and ampersand
+
 ## [0.6.0]
 
 ### Added
