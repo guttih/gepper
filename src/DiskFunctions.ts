@@ -1,4 +1,3 @@
-import { BlobOptions } from "buffer";
 import * as fs from "fs";
 
 export class DiskFunctions {

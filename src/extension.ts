@@ -1,14 +1,26 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 // import * as vscode from "vscode";
-import { workspace, ExtensionContext, window, ViewColumn, commands, Uri, TextDocument, OutputChannel, TextEditor, Selection, Position } from "vscode";
+import {
+    workspace,
+    ExtensionContext,
+    window,
+    ViewColumn,
+    commands,
+    Uri,
+    TextDocument,
+    OutputChannel,
+    TextEditor,
+    Selection,
+    TextDocumentChangeEvent,
+    TextEditorSelectionChangeEvent,
+} from "vscode";
 import { ClassCreator, OpenAfterClassCreation } from "./ClassCreator";
 import { TokenWorker } from "./TokenWorker";
 import { Executioner } from "./Executioner";
 import { Downloader, UrlFileLinker } from "./Downloader";
 import { DiskFunctions } from "./DiskFunctions";
 import { ClassWorker } from "./ClassWorker";
-import { ClassInformation } from "./ClassInformation";
 let handleMenuShow: NodeJS.Timeout;
 
 // this method is called when your extension is activated
@@ -24,8 +36,6 @@ export function activate(context: ExtensionContext) {
     let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {
         // if (document.languageId === "yourid" && document.uri.scheme === "file") {
         if (document.languageId === "cpp") {
-            // console.log(`${document.fileName} saved!`);
-            // let bla = vscode.env.shell;
             const configPropertyPath = "cpp.gepper.shellExecute.OnSave.Command";
             const cmd = workspace.getConfiguration().get<string>(configPropertyPath);
             if (cmd) {
@@ -38,8 +48,22 @@ export function activate(context: ExtensionContext) {
             }
         }
     });
+    //onDidChangeActiveTextEditor
+    let fnOnDidChangeActiveTextEditor = window.onDidChangeActiveTextEditor((editor: TextEditor | undefined) => {
+        console.log("onDidChangeActiveTextEditor");
+        shouldShowMenuItemAddMissingImplementations(editor ? editor : null, null, undefined);
+    });
+    let fnOnDidChangeTextEditorSelection = window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
+        console.log("onDidChangeTextEditorSelection");
+        shouldShowMenuItemAddMissingImplementations(e.textEditor, null, undefined);
+    });
+    let fnOnDidChangeTextDocument = workspace.onDidChangeTextDocument((e: TextDocumentChangeEvent) => {
+        console.log("onDidChangeTextDocument");
+        shouldShowMenuItemAddMissingImplementations(null, e.document, undefined);
+    });
 
-    commands.executeCommand("setContext", "gepper.showEditClassMenu", true);
+    // commands.executeCommand("setContext", "gepper.showAddClassOperators", false);
+    // commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
 
     const createNewClass = (className: string | undefined, dir?: string): ClassCreator | null => {
         if (TokenWorker.isOnlySpaces(className)) {
@@ -89,58 +113,8 @@ export function activate(context: ExtensionContext) {
 
         createNewClass(className, context.path);
     });
-    let fnClassImplementMissingFunctions = commands.registerCommand("gepper.classImplementMissingFunctions", async (context) => {
-        //Make ClassInformation
-        window.showInformationMessage("fnClassImplementMissingFunctions");
-        let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
-        if (!info.isValid()) {
-            window.showWarningMessage(`Could not parse class in file`);
-            return;
-        }
-        let missing = info.getFunctions(true);
-        if (!missing || missing.length < 1) {
-            return; //nothing to do
-        }
-
-        const ret = ClassWorker.findImplementationFile(info.name, window.activeTextEditor?.document.fileName);
-        if (ret === null) {
-            window.showWarningMessage("Could not find a file to put the implementations to");
-            return;
-        }
-        let doc: TextDocument;
-        if (typeof ret === "string") {
-            //We did not get an open document, but we got the location of one, so we will need to open it
-            doc = await workspace.openTextDocument(ret);
-        } else {
-            doc = ret;
-        }
-        info.setImplementation(doc);
-        let headFuncs = info.getFunctions(true);
-        let implFuncs = info.getImplementedFunctions();
-        let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs, `${info.name}::`);
-
-        let code = ClassWorker.createImplementationsFromDeclarations(missingFuncs);
-        await window.showTextDocument(doc, {
-            viewColumn: ViewColumn.Active,
-        });
-        const editor = window.activeTextEditor;
-        const docLengthBefore = doc.lineCount;
-        if (code.length > 0 && editor) {
-            editor
-                .edit((editBuilder) => {
-                    editBuilder.insert(new Position(docLengthBefore, 0), code);
-                })
-                .then((success) => {
-                    if (!success) {
-                        return;
-                    }
-                    let last = doc.lineAt(doc.lineCount-1);
-                    editor.selection=new Selection(new Position(docLengthBefore, 0), last.range.end);
-                    editor.revealRange(editor.selection);
-                });
-        }
-
-        console.log(`This doc is selected: ${doc.fileName}`);
+    let fnClassImplementMissingFunctions = commands.registerCommand("gepper.classImplementMissingFunctions", async () => {
+        await ClassWorker.implementMissingClassFunctions(true, true);
     });
 
     const createProject = async (projectRoot: Uri, context: any) => {
@@ -256,32 +230,55 @@ export function activate(context: ExtensionContext) {
         }
     });
 
-    const shouldShowMenuItemAddMissingImplementations = (editor: TextEditor, document: TextDocument | null, selections: readonly Selection[]) => {
-        console.log("shouldShowMenuItemAddMissingImplementations");
+    const shouldShowMenuItemAddMissingImplementationsWorker = (
+        editor: TextEditor | null,
+        document: TextDocument | null,
+        selections: readonly Selection[] | undefined
+    ) => {
         let selection: Selection | undefined = selections && selections.length > 0 ? selections[0] : undefined;
         let shouldShowMenu = false;
         if (editor) {
-            shouldShowMenu = ClassWorker.isInsideClass(editor.document, selection);
-            if (!shouldShowMenu) {
-                //no class selected, let's try to select the first one
-                let selection = ClassWorker.selectFirstClassDeceleration(editor.document);
-                console.log(`shouldShowMenuItemAddMissingImplementations selected first class: ${selection !== null}`);
-                if (selection) {
-                    shouldShowMenu = ClassWorker.isInsideClass(editor.document, selection);
-                }
+            document = editor.document;
+        }
+        if (!document || document.languageId !== "cpp") {
+            commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
+            return;
+        }
 
-                clearTimeout(handleMenuShow);
-                shouldShowMenuItemAddMissingImplementations(editor, document, selections);
-                handleMenuShow = setTimeout(() => shouldShowMenuItemAddMissingImplementations(editor, document, selections), 30);
+        shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
+        if (!shouldShowMenu) {
+            //no class selected, let's try to select the first one
+            let selection = ClassWorker.selectFirstClassDeceleration(document);
+            if (selection) {
+                shouldShowMenu = ClassWorker.isInsideClassLine(document, selection);
+            }
+            if (shouldShowMenu) {
+                ClassWorker.implementMissingClassFunctions(true, false).then((funcArr) => {
+                    commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", funcArr && funcArr.length > 0 ? true : false);
+                });
+            } else {
+                commands.executeCommand("setContext", "gepper.showClassImplementMissingFunctions", false);
             }
         }
     };
+    const shouldShowMenuItemAddMissingImplementations = (
+        editor: TextEditor | null,
+        document: TextDocument | null,
+        selections: readonly Selection[] | undefined
+    ) => {
+        clearTimeout(handleMenuShow);
+        handleMenuShow = setTimeout(() => shouldShowMenuItemAddMissingImplementationsWorker(editor, document, selections), 30);
+    };
+    shouldShowMenuItemAddMissingImplementations(window.activeTextEditor ? window.activeTextEditor : null, null, undefined);
     context.subscriptions.push(
         fnCreateClass,
         fnCreateClassInFolder,
         onSaveCppFile,
         fnCreateCMakeProject,
         fnAddClassOperators,
-        fnClassImplementMissingFunctions
+        fnClassImplementMissingFunctions,
+        fnOnDidChangeTextDocument,
+        fnOnDidChangeTextEditorSelection,
+        fnOnDidChangeActiveTextEditor
     );
 }

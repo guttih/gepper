@@ -1,8 +1,7 @@
-import { window, TextDocument, Selection, workspace } from "vscode";
+import { window, TextDocument, Selection, workspace, ViewColumn, Position } from "vscode";
 import { ClassInformation } from "./ClassInformation";
 import * as path from "path";
 import { DiskFunctions } from "./DiskFunctions";
-import { ClassCreator } from "./ClassCreator";
 
 export class ClassWorker {
     /**
@@ -36,34 +35,82 @@ export class ClassWorker {
         window.showInformationMessage("ClassWorker:" + msg);
     }
 
-    static getClassInformationFromActiveDocument(): ClassInformation {
-        let selection = window.activeTextEditor?.selection;
-        const headerFile = window.activeTextEditor?.document;
-        if (!this.isInsideClass(headerFile, selection)) {
-            selection = this.selectFirstClassDeceleration(window.activeTextEditor?.document);
-        }
-        let info = new ClassInformation(headerFile, selection);
+    static async implementMissingClassFunctions(
+        openImplementationFileIfClosed: boolean,
+        addToImplementationDocument: boolean
+    ): Promise<string[] | null> {
+        // //Make ClassInformation
+        let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
         if (!info.isValid()) {
-            const selection = this.selectFirstClassDeceleration(window.activeTextEditor?.document);
-            info = new ClassInformation(headerFile, selection);
-        }
-        return info;
-    }
-    static findMissingImplementations(): string[] | null {
-        const info = this.getClassInformationFromActiveDocument();
-        if (!info) {
+            window.showWarningMessage(`Could not parse class in file`);
             return null;
         }
-        let classFunctions = info.getFunctions(true);
-        console.log(classFunctions);
+        let missing = info.getFunctions(true);
+        if (!missing || missing.length < 1) {
+            return null; //nothing to do
+        }
 
-        return classFunctions;
+        const ret = ClassWorker.findImplementationFile(info.name, window.activeTextEditor?.document.fileName);
+        if (ret === null) {
+            window.showWarningMessage("Could not find a file to put the implementations to");
+            return null;
+        }
+        let doc: TextDocument;
+        if (typeof ret === "string") {
+            if (!openImplementationFileIfClosed) {
+                return null;
+            }
+            //We did not get an open document, but we got the location of one, so we will need to open it
+            doc = await workspace.openTextDocument(ret);
+        } else {
+            doc = ret;
+        }
+        info.setImplementation(doc);
+        let headFuncs = info.getFunctions(true);
+        let implFuncs = info.getImplementedFunctions();
+        let missingFuncs = info.getMissingFunctions(headFuncs, implFuncs, `${info.name}::`);
+        if (!addToImplementationDocument) {
+            return missingFuncs;
+        }
+        let code = ClassWorker.createImplementationsFromDeclarations(missingFuncs);
+        await window.showTextDocument(doc, {
+            viewColumn: ViewColumn.Active,
+        });
+        const editor = window.activeTextEditor;
+        const docLengthBefore = doc.lineCount;
+        if (code.length > 0 && editor) {
+            editor
+                .edit((editBuilder) => {
+                    editBuilder.insert(new Position(docLengthBefore, 0), code);
+                })
+                .then((success) => {
+                    if (!success) {
+                        return;
+                    }
+                    let last = doc.lineAt(doc.lineCount - 1);
+                    editor.selection = new Selection(new Position(docLengthBefore, 0), last.range.end);
+                    editor.revealRange(editor.selection);
+                });
+        }
+
+        return missingFuncs;
     }
 
-    static isInsideClass(document: TextDocument | undefined, selection: Selection | undefined): boolean {
-        console.log("isInsideClass");
+    static getClassInformationFromActiveDocument(): ClassInformation {
+        const headerFile = window.activeTextEditor?.document;
+        let info: ClassInformation;
+        let selection = window.activeTextEditor?.selection;
+        if (this.isInsideClassLine(headerFile, selection)) {
+            info = new ClassInformation(headerFile, selection);
+        } else {
+            info = new ClassInformation(headerFile, this.selectFirstClassDeceleration(window.activeTextEditor?.document));
+        }
+
+        return info;
+    }
+
+    static isInsideClassLine(document: TextDocument | undefined, selection: Selection | undefined): boolean {
         if (!document || !selection) {
-            console.log("isInsideClass no doc or selection, exiting");
             return false;
         }
         let selectedLineIndex = selection.active.line < selection.anchor.line ? selection.active.line : selection.anchor.line;
@@ -85,9 +132,6 @@ export class ClassWorker {
         if (!extension.startsWith(".h")) {
             return null;
         }
-        // const { activeTab } = window.tabGroups.activeTabGroup;
-
-        // window.tabGroups.all.flatMap(({ tabs }) => tabs.map(tab => tab.label))
         let workspaceDocs = workspace.textDocuments;
         let docs = workspaceDocs.filter((e) => e.languageId === "cpp" && e.getText().includes(`${className}::`));
         if (docs.length === 1) {
@@ -119,13 +163,6 @@ export class ClassWorker {
             }
         }
         return testFile;
-
-        // for (let i = 0; i < docs.length; i++) {
-        //     console.log(`document${i}: ${docs[i].fileName}`);
-        // }
-
-        // let bareFilename = path.basename(fileName, extension);
-        // var missing = ClassWorker.findMissingImplementations();
     }
 
     static doesFileImplementClass(className: string, testFile: string): boolean {
@@ -137,9 +174,4 @@ export class ClassWorker {
         }
         return false;
     }
-
-    // static addMissingImplementations(context: ExtensionContext) {
-
-    //     const wed = context.
-    // }
 }
