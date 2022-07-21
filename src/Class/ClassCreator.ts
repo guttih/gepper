@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { DiskFunctions } from "./DiskFunctions";
-import { TokenWorker, FunctionTokenName } from "./TokenWorker";
+import { DiskFunctions } from "../DiskFunctions";
+import { TokenWorker, FunctionTokenName } from "../TokenWorker";
 import { platform } from "process";
 
 

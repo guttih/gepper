@@ -16,6 +16,7 @@ export enum ClassFunctionSpecifiers {
     register = "register",
     static = "static",
     extern = "extern",
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     thread_local = "thread_local",
     mutable = "mutable",
 }

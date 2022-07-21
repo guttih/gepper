@@ -12,7 +12,7 @@ import {
 } from "vscode";
 import { Executioner } from "./Executioner";
 import { DiskFunctions } from "./DiskFunctions";
-import { ClassWorker } from "./ClassWorker";
+import { ClassWorker } from "./Class/ClassWorker";
 import { MenuEditorHandler } from "./MenuEditorHandler";
 import { Projector } from "./Projector";
 let editorMenuHandler: MenuEditorHandler = new MenuEditorHandler();

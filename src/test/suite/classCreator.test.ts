@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import { test } from "mocha";
-import { ClassCreator } from "../../ClassCreator";
+import { ClassCreator } from "../../Class/ClassCreator";
 import * as vscode from "vscode";
 
 suite("ClassCreator", () => {

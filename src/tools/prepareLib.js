@@ -1,16 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-
 // Returns true if file exists otherwise it returns false.
-module.exports.fileExists = function fileExists(filePath){
-	try
-	{
-		return fs.statSync(filePath).isFile();
-	}
-	catch (err)
-	{
-		return false;
-	}
+module.exports.fileExists = function fileExists(filePath) {
+    try {
+        return fs.statSync(filePath).isFile();
+    }
+    catch (err) {
+        return false;
+    }
 };
 
 /**
@@ -21,15 +18,15 @@ module.exports.fileExists = function fileExists(filePath){
  * @param {string} newContent New content which will be inserted between the start and end tokens.
  * @returns {string|null} On success, the modified content.  On error, the return value is null.
  */
-module.exports.replaceContent = function replaceContent (content, startToken, endToken, newContent) {
+module.exports.replaceContent = function replaceContent(content, startToken, endToken, newContent) {
     let start = content.indexOf(startToken);
-    let end = content.indexOf(endToken,start);
-    if (start < 0 ) { console.error(`startToken "${startToken}" not found!`); return null;  }
-    if (end   < 0 ) { console.error(`endToken "${endToken}" not found!`);     return null;  }
-    let ret = content.substring(0, start+startToken.length);
-    ret+=newContent;
-    ret+=content.substring(end);
-    
+    let end = content.indexOf(endToken, start);
+    if (start < 0) { console.error(`startToken "${startToken}" not found!`); return null; }
+    if (end < 0) { console.error(`endToken "${endToken}" not found!`); return null; }
+    let ret = content.substring(0, start + startToken.length);
+    ret += newContent;
+    ret += content.substring(end);
+
 
     return ret;
 };
@@ -39,46 +36,61 @@ module.exports.replaceContent = function replaceContent (content, startToken, en
  * @param   {string} workspaceDir Directory containing files package.json and package-lock.json
  * @returns {string|null} On success: new new version number string.  On error: null.
  */
-module.exports.bump = function bump(workspaceDir){
-    let filePackage     = path.join(workspaceDir, "package.json"),
-        filePackageLock = path.join(workspaceDir, "package-lock.json");
+module.exports.bump = function bump(workspaceDir) {
+    let filePackage = path.join(workspaceDir, "package.json"),
+        filePackageLock = path.join(workspaceDir, "package-lock.json"),
+        fileBugReport = path.join(workspaceDir, ".github/ISSUE_TEMPLATE/bug_report.yml");
 
-	if (! module.exports.fileExists(filePackage) || ! module.exports.fileExists(filePackageLock)) {
+    if (!module.exports.fileExists(filePackage) || !module.exports.fileExists(filePackageLock)) {
         console.error(`Files "package.json" and "package-lock.json" must be found in provided directory (${workspaceDir}).`);
         return null;
     }
-    let packageContent     = require(filePackage),
+    let packageContent = require(filePackage),
         packageLockContent = require(filePackageLock);
-    let oldVersion=packageContent.version;
-    if (oldVersion === undefined || packageLockContent.version === undefined) { return null;}
+    let oldVersion = packageContent.version;
+    if (oldVersion === undefined || packageLockContent.version === undefined) { return null; }
     let i = oldVersion.lastIndexOf('.');
-    if (i < 2) {return null;}
-    let prefix=oldVersion.substring(0,i);
-    let oldNumStr=oldVersion.substring(i+1);
+    if (i < 2) { return null; }
+    let prefix = oldVersion.substring(0, i);
+    let oldNumStr = oldVersion.substring(i + 1);
     if (!module.exports.isPositiveInteger(oldNumStr, true)) { return null; }
-    let newNum=Number(oldNumStr) + 1;
-    let newVersion=`${prefix}.${newNum.toString()}`;
-    packageContent.version=newVersion;
-    packageLockContent.version=newVersion;
-    packageLockContent.packages[""].version=newVersion;
+    let newNum = Number(oldNumStr) + 1;
+    let newVersion = `${prefix}.${newNum.toString()}`;
+
+    packageContent.version = newVersion;
+    packageLockContent.version = newVersion;
+    packageLockContent.packages[""].version = newVersion;
     var newContent = JSON.stringify(packageContent, null, 4);
-    try { fs.writeFileSync(filePackage, newContent); } catch(err) { console.error(err);console.log('Unable to write to file package.json');return null; }
+    try { fs.writeFileSync(filePackage, newContent); } catch (err) { console.error(err); console.log(`Unable to write to file ${path.basename(filePackage)}`); return null; }
 
     newContent = JSON.stringify(packageLockContent, null, 4);
-    try { fs.writeFileSync(filePackageLock, newContent); } catch(err) { console.error(err);console.log('Unable to write to file package-lock.json');return null; }
-      
+    try { fs.writeFileSync(filePackageLock, newContent); } catch (err) { console.error(err); console.log(`Unable to write to file ${path.basename(filePackageLock)}`); return null; }
+
+    //Ok, let's update .github/ISSUE_TEMPLATE/bug_report.md and add the new version to it
+    let yml = fs.readFileSync(fileBugReport).toString();
+    const indent = "      - ";
+    const searchStr = `${indent}${oldVersion}`;
+    let index = yml.indexOf(searchStr);
+    if (index > -1) {
+        yml = yml.replace(searchStr, `${indent}${newVersion}\n${searchStr}`);
+        try { fs.writeFileSync(fileBugReport, yml); } catch (err) { console.error(err); console.log(`Unable to write to file ${path.basename(fileBugReport)}`); return null; }
+    } else {
+        console.error("Unable find old version in bug_report.yml so, I cannot update it.\n  You must do it manually in file:"+fileBugReport);
+    }
+    
+
     return newVersion;
 };
 
 module.exports.isPositiveInteger = function isPositiveInteger(str, bTreatZeroAsPositive) {
     if (typeof str !== 'string') {
-      return false;
+        return false;
     }
     const num = Number(str);
-  
+
     if (Number.isInteger(num)) {
-      return bTreatZeroAsPositive ? true : (num > 0);
+        return bTreatZeroAsPositive ? true : (num > 0);
     }
-  
+
     return false;
-  };
+};

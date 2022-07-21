@@ -2,8 +2,8 @@ import { window, TextDocument, Selection, workspace, ViewColumn, Position, Quick
 import { ClassAccess } from "./ClassTypes";
 import { ClassInformation } from "./ClassInformation";
 import * as path from "path";
-import { DiskFunctions } from "./DiskFunctions";
-import { TokenWorker } from "./TokenWorker";
+import { DiskFunctions } from "../DiskFunctions";
+import { TokenWorker } from "../TokenWorker";
 import { ClassCreator, OpenAfterClassCreation } from "./ClassCreator";
 
 export interface ClassDeclarationFunctions {

@@ -1,5 +1,5 @@
 import { Selection, TextDocument, TextEditor } from "vscode";
-import { ClassWorker } from "./ClassWorker";
+import { ClassWorker } from "./Class/ClassWorker";
 import { MenuCommon, MenuContext } from "./MenuCommon";
 
 export class MenuEditorHandler {
