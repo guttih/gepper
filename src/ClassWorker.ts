@@ -1,5 +1,6 @@
 import { window, TextDocument, Selection, workspace, ViewColumn, Position, QuickPickItem, TextLine } from "vscode";
-import { ClassAccess, ClassInformation } from "./ClassInformation";
+import { ClassAccess } from "./ClassTypes";
+import { ClassInformation } from "./ClassInformation";
 import * as path from "path";
 import { DiskFunctions } from "./DiskFunctions";
 import { TokenWorker } from "./TokenWorker";
@@ -371,9 +372,9 @@ export class ClassWorker {
             }
             info.setImplementation(doc);
 
-            let headNoVars = classFunctions.inHeader.map((e) => ClassInformation.removeFunctionVariableNames(e));
+            let headNoVars = classFunctions.inHeader.map((e) => ClassInformation.removeFunctionVariableNames(e, true));
             let operatorsNotImplemented: PickItem[] = operators.filter(
-                (e) => headNoVars.indexOf(ClassInformation.removeFunctionVariableNames(e.data.declaration)) === -1
+                (e) => headNoVars.indexOf(ClassInformation.removeFunctionVariableNames(e.data.declaration, true)) === -1
             );
 
             if (operatorsNotImplemented.length > 0) {
@@ -383,7 +384,7 @@ export class ClassWorker {
                     let code = ClassWorker.createImplementationsFromDeclarations(
                         functionsToAdd.map((e) => {
                             return {
-                                declaration: ClassInformation.addPrefixToFunctionName(e.declaration, `${info.name}::`),
+                                declaration: ClassInformation.addPrefixToFunctionName(e.declaration, `${info.name}::`, true),
                                 implementation: e.implementation,
                             };
                         })

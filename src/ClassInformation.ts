@@ -1,15 +1,11 @@
 import { Position, Range, Selection, TextDocument, TextLine } from "vscode";
+import { ClassFunctionSpecifiers } from "./ClassTypes";
 
 export interface Pos {
     start: number;
     end: number;
 }
 
-export enum ClassAccess {
-    public = "public:",
-    private = "private:",
-    protected = "protected:",
-}
 export class ClassInformation {
     name: string | null = null;
     body: string | null = null;
@@ -24,7 +20,7 @@ export class ClassInformation {
      * @param func Valid function declaration
      * @returns on success, the declaration without any variable names, on error returns func unchanged.
      */
-    static removeFunctionVariableNames(func: string): string {
+    static removeFunctionVariableNames(func: string, removeFunctionSpecifier: boolean): string {
         let startBracket = func.indexOf("(");
         let endBracket = func.indexOf(")", startBracket + 1);
         if (startBracket < 0 || endBracket < 0 || startBracket >= endBracket) {
@@ -65,15 +61,25 @@ export class ClassInformation {
             worker = worker.substring(iEnd + 1);
             if (appendChar === ")") {
                 ret += worker;
-                return ret;
+                return removeFunctionSpecifier ? ClassInformation.removeFunctionSpecifier(ret) : ret;
             }
         }
-        return func; //error but returning original
+
+        return removeFunctionSpecifier ? ClassInformation.removeFunctionSpecifier(func) : func; //error but returning original
     }
 
-    static addPrefixToFunctionName(declaration: string, functionPrefix: string | null): string {
+    static removeFunctionSpecifier(functionDeclaration: string) {
+        const specifiers = Object.values(ClassFunctionSpecifiers);
+        const found = specifiers.filter((e) => functionDeclaration.startsWith(e + " "));
+        if (found.length > 0) {
+            functionDeclaration = functionDeclaration.substring(found[0].length + 1);
+        }
+        return functionDeclaration;
+    }
+
+    static addPrefixToFunctionName(declaration: string, functionPrefix: string | null, removeFunctionSpecifier: boolean): string {
+        let ret;
         if (functionPrefix && functionPrefix.length > 0) {
-            let ret;
             let name = declaration.substring(0, declaration.indexOf("("));
             let iSpace = name.lastIndexOf(" ");
             if (["*", "&"].includes(name[iSpace + 1])) {
@@ -81,10 +87,14 @@ export class ClassInformation {
             }
             name = name.substring(iSpace + 1);
             ret = declaration.replace(name, `${functionPrefix}${name}`);
-            return ret;
         } else {
-            return declaration;
+            ret = declaration;
         }
+        if (removeFunctionSpecifier) {
+            ret = ClassInformation.removeFunctionSpecifier(ret);
+        }
+
+        return ret;
     }
 
     /**
@@ -99,17 +109,17 @@ export class ClassInformation {
             return [];
         }
         //removing all variable names
-        let headNoVars = headFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e));
-        let implNoVars = implFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e));
+        let headNoVars = headFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e, true));
+        let implNoVars = implFuncs.map((e) => ClassInformation.removeFunctionVariableNames(e, false));
 
         //find which are not implemented
         let notImplemented = headNoVars.filter((e) => !implNoVars.includes(e));
 
         //Restoring variable names for all functions which are not implemented
-        let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(ClassInformation.removeFunctionVariableNames(e)));
+        let toBeImplemented = headFuncs?.filter((e) => notImplemented.includes(ClassInformation.removeFunctionVariableNames(e, true)));
         if (functionPrefix && functionPrefix.length > 0) {
             toBeImplemented = toBeImplemented.map((e) => {
-                return ClassInformation.addPrefixToFunctionName(e, functionPrefix);
+                return ClassInformation.addPrefixToFunctionName(e, functionPrefix, true);
             });
         }
         return toBeImplemented && toBeImplemented.length > 0 ? toBeImplemented : [];

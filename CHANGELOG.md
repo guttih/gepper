@@ -2,6 +2,12 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.4]
+
+### Fix
+
+Adding better detection, for when function is not implemented.  Added detection for function specifiers which are in the beginning of a function declaration in a header file.
+
 ## [0.6.3]
 
 ### Changed
