@@ -71,4 +71,4 @@ You can configure what generated files created will contain.  Use content comman
 [Top](#gepper-readme)
 
 
-[settings]: ./docs/settings.md
+[settings]: https://github.com/guttih/gepper/blob/main/docs/settings.md
