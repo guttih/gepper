@@ -7,6 +7,7 @@ All notable changes to the "gepper" extension will be documented in this file.
 ### Changed
 
 Minor changes to readme.
+
 ## [0.6.1]
 
 ### Changed
