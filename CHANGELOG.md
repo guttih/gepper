@@ -2,6 +2,11 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.2]
+
+### Changed
+
+Minor changes to readme.
 ## [0.6.1]
 
 ### Changed
@@ -11,7 +16,7 @@ better detection when functions are not implemented and adding operators with sp
 
 ### Added
 
-On open class header file, right click inside the editor window and select one
+Open class header file, right click inside the editor window and select one
 of these new options
   - **Add operators to C++ Class** and select one ore more of these operators to implement if they have not already been implemented
      - Class Assignment operator `objectA = objectB`
