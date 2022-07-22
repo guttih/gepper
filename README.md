@@ -7,7 +7,7 @@ Gepper is a C++ helper extension which includes snippets and adding classes.
  - **Quickly create a class** Right-click the explorer window and select from the context menu `Create a new C++ Class`
  - **Create a class in selected directory** Right-click folder in explorer window and create a class inside that folder.
  - **Add common operators to C++ Class** Open class header file, right click inside the editor window and select `Add operators to C++ Class`
- - **Add missing implementations Class source file** Open class header file, right click inside the editor window and select `Implement missing class functions`
+ - **Add missing implementations to Class source file** Open class header file, right click inside the editor window and select `Implement missing class functions`
  - **Run a command on save** Execute a shell command specified by you, each time you save a .cpp or a .h file.
 
 This extension is in the early stages so very few snippets have been created.
