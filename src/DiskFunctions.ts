@@ -20,7 +20,7 @@ export class DiskFunctions {
         try {
             return fs.statSync(file).isDirectory();
         } catch (err) {
-            return false;
+            return false; 
         }
     }
     /**
