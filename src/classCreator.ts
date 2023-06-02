@@ -1,8 +1,14 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { DiskFunctions } from "./diskFunctions";
-import { TokenWorker, FunctionTokenName, TokenInfo } from "./tokenWorker";
+import { TokenWorker, FunctionTokenName } from "./tokenWorker";
 import { platform } from "process";
+
+export enum OpenAfterClassCreation  {
+    headerFile="Header file",
+    sourceFile="Source file",
+    none="none"
+}
 
 export class ClassCreator {
     #_name: string = "";
@@ -123,6 +129,7 @@ export class ClassCreator {
 
         return includePath ? `${this.#_dir}/${fileNameHeader}` : fileNameHeader;
     }
+
     /**
      * Saves the class in two files.
      * @returns On success: true.  On fail: false.
@@ -184,7 +191,7 @@ export class ClassCreator {
                 }
             } else {
                 //linux
-                if (dir !== "/") {
+                if (dir[0] !== "/") {
                     this.#_dir = path.join(workDir, dir);
                 }
             }
@@ -240,5 +247,9 @@ export class ClassCreator {
     }
     getRawImplementationContent(): string | undefined {
         return vscode.workspace.getConfiguration().get<string>("cpp.gepper.classImplementationTemplate");
+    }
+    getRawClassCreatedShowFile(): OpenAfterClassCreation {
+        const ret = vscode.workspace.getConfiguration().get<OpenAfterClassCreation>("cpp.gepper.classCreated.ShowFile");
+        return ret? ret: OpenAfterClassCreation.none;
     }
 }

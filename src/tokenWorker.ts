@@ -5,9 +5,14 @@ enum TOKEN {
     postfix = "}}",
 }
 
-export interface TokenInfo {
+export interface FunctionalTokenInfo {
     name: string;
     value: FunctionTokenName;
+    token: string;
+}
+export interface ExecutionTokenInfo {
+    name: string;
+    value: ExecutionToken;
     token: string;
 }
 export enum FunctionTokenName {
@@ -21,7 +26,7 @@ export enum FunctionTokenName {
     classImplementationFileName = "SOURCE_FILE_NAME",
 }
 
-export enum ExecutionTokens {
+export enum ExecutionToken {
     filePath = "FILE_PATH",
     fileName = "FILE_NAME",
 }
@@ -42,6 +47,16 @@ export class TokenWorker {
         }
         return ret;
     }
+
+    static isToken(text: string):Boolean {
+        //todo: lookup string values in all tokens
+        return text.startsWith(`${TOKEN.prefix}${TOKEN.prefixVar}`) && text.endsWith(`${TOKEN.postfixVar}${TOKEN.postfix}`);
+    }
+    static hasToken(text: string):Boolean {
+        //todo: lookup string values in all tokens
+        const iSearch = text.indexOf(`${TOKEN.postfix}${TOKEN.prefixVar}`);
+        return  iSearch > -1 && text.indexOf(`${TOKEN.postfixVar}${TOKEN.postfix}`) > iSearch;
+    }
     static capitalizeFirst(text: string): string {
         return `${text[0].toUpperCase()}${text.substring(1)}`;
     }
@@ -54,7 +69,7 @@ export class TokenWorker {
      * @param name name of function token to create a token from
      * @returns A valid token
      */
-    static createToken(name: FunctionTokenName | ExecutionTokens): string {
+    static createToken(name: FunctionTokenName | ExecutionToken): string {
         return `${TOKEN.prefix}${TOKEN.prefixVar}${name}${TOKEN.postfixVar}${TOKEN.postfix}`;
     }
 
@@ -70,17 +85,25 @@ export class TokenWorker {
         return ret;
     }
 
-    static getFunctionalTokenInfo(name: FunctionTokenName): TokenInfo {
-        let info: TokenInfo = {
+    static getFunctionalTokenInfo(name: FunctionTokenName): FunctionalTokenInfo {
+        let info: FunctionalTokenInfo = {
             name: name,
             value: name as FunctionTokenName,
             token: TokenWorker.createToken(name),
         };
         return info;
     }
-    static getFunctionalTokens(): Array<TokenInfo> {
+    static getExecutionTokenInfo(name: ExecutionToken): ExecutionTokenInfo {
+        let info: ExecutionTokenInfo = {
+            name: name,
+            value: name as ExecutionToken,
+            token: TokenWorker.createToken(name),
+        };
+        return info;
+    }
+    static getFunctionalTokens(): Array<FunctionalTokenInfo> {
         // const tokenList = TokenWorker.getAllCreatedToken();
-        const tokenFunctions: Array<TokenInfo> = Object.keys(FunctionTokenName).map((name) => {
+        const tokenFunctions: Array<FunctionalTokenInfo> = Object.keys(FunctionTokenName).map((name) => {
             return TokenWorker.getFunctionalTokenInfo((<any>FunctionTokenName)[name]);
             // return {
             //     name,
@@ -95,6 +118,13 @@ export class TokenWorker {
         // Object.tokenFunctions.forEach(key => {
         //     content = TokenWorker.executeTokenFunction(key, content);
         // });
+    }
+    static getExecutionTokens(): Array<ExecutionTokenInfo> {
+        const executionTokens: Array<ExecutionTokenInfo> = Object.keys(ExecutionToken).map((name) => {
+            return TokenWorker.getExecutionTokenInfo((<any>ExecutionToken)[name]);
+        });
+        return executionTokens;
+
     }
 
     /**

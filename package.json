@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -79,34 +79,44 @@
                     "cpp.gepper.classPath": {
                         "type": "string",
                         "default": "",
-                        "description": "Where the class will be created, relative to the project directory."
+                        "markdownDescription": "### Where the class will be created\nrelative to the project directory or absolute path.\n"
                     },
                     "cpp.gepper.classHeaderTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
                         "default": "#ifndef {{__CLASS_NAME_UPPER__}}_H\n#define {{__CLASS_NAME_UPPER__}}_H\n\n#pragma once\n\nclass {{__CLASS_NAME__}}\n{\npublic:\n    {{__CLASS_NAME__}}();\n    ~{{__CLASS_NAME__}}();\n\nprivate:\n\n};\n\n#endif",
-                        "description": "Content of your created header file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n{{__HEADER_FILE_NAME__}}       - default header file name as entered in the settings.\n{{__SOURCE_FILE_NAME__}}       - default source file name as entered in the settings.\n"
+                        "markdownDescription": "### Class Template for header file content (.h)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n| `{{__HEADER_FILE_NAME__}}` | default header file name as entered in the settings |\n| `{{__SOURCE_FILE_NAME__}}` | default source file name as entered in the settings |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
                     },
                     "cpp.gepper.classImplementationTemplate": {
                         "type": "string",
                         "editPresentation": "multilineText",
                         "default": "#include \"{{__HEADER_FILE_NAME__}}\"\n\n{{__CLASS_NAME__}}::{{__CLASS_NAME__}}()\n{\n\n}\n\n{{__CLASS_NAME__}}::~{{__CLASS_NAME__}}()\n{\n\n}",
-                        "description": "Content of your created source file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n{{__HEADER_FILE_NAME__}}       - default header file name as entered in the settings.\n{{__SOURCE_FILE_NAME__}}       - default source file name as entered in the settings.\n"
+                        "markdownDescription": "### Class Template for source file content (.cpp)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n| `{{__HEADER_FILE_NAME__}}` | default header file name as entered in the settings |\n| `{{__SOURCE_FILE_NAME__}}` | default source file name as entered in the settings |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
                     },
                     "cpp.gepper.classHeaderFileNameScheme": {
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.h",
-                        "description": "Name of your header file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n"
+                        "markdownDescription": "### Class header file naming schema (.h)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
                     },
                     "cpp.gepper.classImplementationFileNameScheme": {
                         "type": "string",
                         "default": "{{__CLASS_NAME__}}.cpp",
-                        "description": "Name of your source file. \nAvailable commands are:\n{{__CLASS_NAME__}}             - Entered class name.\n{{__CLASS_NAME_UPPER__}}       - Class name transformed to UPPERCASE.\n{{__CLASS_NAME_LOWER__}}       - Class name transformed to lowercase.\n{{__CLASS_NAME_LOWER_DASH__}}  - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\".\n{{__CLASS_NAME_LOWER_UNDER__}} - Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\".\n{{__CLASS_NAME_CAPITALIZE__}}  - First letter of entered class name is capitalized.\n"
+                        "markdownDescription": "### Class source file naming schema  (.cpp)\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__CLASS_NAME__}}` | Entered class name |\n| `{{__CLASS_NAME_UPPER__}}` | Class name transformed to UPPERCASE |\n| `{{__CLASS_NAME_LOWER__}}` | Class name transformed to lowercase |\n| `{{__CLASS_NAME_LOWER_DASH__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"-\" |\n| `{{__CLASS_NAME_LOWER_UNDER__}}` | Class name transformed to lowerCase and every transformed uppercase character is prefixed with \"_\" |\n| `{{__CLASS_NAME_CAPITALIZE__}}` | First letter of entered class name is capitalized |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#class-creation---functional-tokens)\n"
+                    },
+                    "cpp.gepper.classCreated.ShowFile": {
+                        "type": "string",
+                        "enum": [
+                            "Header file",
+                            "Source file",
+                            "none"
+                        ],
+                        "default": "Header file",
+                        "markdownDescription": "### Open on class creation\n\nOpen a file in editor after the class has been created."
                     },
                     "cpp.gepper.shellExecute.OnSave.Command": {
                         "type": "string",
                         "default": "",
-                        "description": "Shell command to execute when user saves a .h or a .cpp file.\n You can use some tokens in the command, and those tokens will be replaced.\nAvailable tokens are:\n{{__FILE_NAME__}} - File name.\n{{__FILE_PATH__}} - Path (with no ending slash) to the file. \nCommand example:\n cp \"{{__FILE_PATH__}}/{{__FILE_NAME__}}\" \"{{__FILE_PATH__}}/{{__FILE_NAME__}}.backup\"."
+                        "markdownDescription": "### Shell command to execute on save\n*Available functional tokens are*\n\n| Functional token | Will be replaced with |\n| :----- | :----- |\n| `{{__FILE_PATH__}}` | Path (with no ending slash) to the file |\n| `{{__FILE_NAME__}}` | File name |\n [Read more](https://github.com/guttih/gepper/blob/main/docs/settings.md#on-save-command---functional-tokens)\n"
                     }
                 }
             }
@@ -123,7 +133,9 @@
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
         "prepare": "node ./src/tools/preparePublish.js",
-        "bump": "node ./src/tools/preparePublish.js -bump"
+        "bump": "node ./src/tools/preparePublish.js -bump",
+        "install": "./src/tools/packageTest.sh -install",
+        "uninstall": "./src/tools/packageTest.sh -uninstall"
     },
     "devDependencies": {
         "@types/vscode": "^1.66.0",
