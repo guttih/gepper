@@ -92,13 +92,20 @@ var buildAndReplaceContent = () => {
         console.log('File exists');
     }
     var mdContent;
-    mdContent = lib.replaceContent(fs.readFileSync(mdFile).toString(), "|:--------|:------|:------------|\n", "\n### CMake snippets", cMdCppTableRows);
-    mdContent = lib.replaceContent(mdContent, "|:-------|:------|:------------|\n", "\n### .gitignore snippets", cMdCMakeTableRows);
-    mdContent = lib.replaceContent(mdContent, "|:------|:------|:------------|\n", "\n\n[Top](#gepper-readme)", cMdGitIgnoreTableRows);
-    return mdContent;
+    console.log("Replacing C++ snippets table");
+    mdContent = fs.readFileSync(mdFile).toString().replaceAll("\r\n", "\n");
+    mdContent = lib.replaceContent(mdContent, "|:--------|:------|:------------|\n", "\n### CMake snippets", cMdCppTableRows, false);
+    console.log("Replacing Cmake snippets table");
+    mdContent = lib.replaceContent(mdContent, "|:-------|:------|:------------|\n", "\n### .gitignore snippets", cMdCMakeTableRows, false);
+    console.log(".gitignore snippets snippets table");
+    return lib.replaceContent(mdContent, "|:------|:------|:------------|\n", "\n\n[Top](#gepper-readme)", cMdGitIgnoreTableRows, false);
 };
 var newContent;
 newContent = buildAndReplaceContent();
+if (!newContent) {
+    console.error("Unable to build new content");
+    exit(1);
+}
 console.log("==================\n"); console.log(newContent); console.log("==================\n");
 fs.writeFileSync(mdFile, newContent);
 console.log(`Run optional commands to:\n`);

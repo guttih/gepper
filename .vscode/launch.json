@@ -6,6 +6,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "node",
+			"request": "launch",
+			"name": "npm run bump",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": [
+			  "run",
+			  "bump"
+			],
+			"cwd": "${workspaceFolder}"
+		  },
+		{
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",

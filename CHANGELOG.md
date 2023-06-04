@@ -2,6 +2,14 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.5]
+
+Adding better class detection
+
+### Fix
+
+  - [#38](https://github.com/guttih/gepper/issues/38) Context menu with Add operators to C++ Class not appearing in header class
+
 ## [0.6.4]
 
 ### Fix
