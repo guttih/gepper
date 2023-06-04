@@ -1,19 +1,37 @@
 import * as assert from "assert";
-import { exists } from "fs";
 import { test } from "mocha";
 import * as path from "path";
-import { join } from "path";
 import { DiskFunctions } from "../../DiskFunctions";
 
 let dirProject = path.dirname(__dirname);
-let index = dirProject.indexOf("/gepper/");
+const sep = path.sep;
+const gepperDir = `${sep}gepper${sep}`;
+const index = dirProject.indexOf(gepperDir);
 dirProject = dirProject.substring(0, index + 7);
 let filePackage = path.join(dirProject, "package.json");
 let dirBogus = "just/somthinghg/strange";
 
-// const name = path.basename(__filename);
-// const filePackage=path.join(dirProject, name);
+
 suite("DiskFunction file or directory exists", () => {
+   
+    test("Extract directory from file path", () => {
+        assert.strictEqual(
+            DiskFunctions.getDirectoryFromFilePath(filePackage),
+            dirProject,
+            "Directory should be the same as the project directory"
+        );
+        assert.strictEqual(
+            DiskFunctions.getDirectoryFromFilePath("C:\\temp\\a.txt"),
+            "C:\\temp",
+            "Directory should be the same as the project directory using windows path"
+        );
+        assert.strictEqual(
+            DiskFunctions.getDirectoryFromFilePath("/c/temp/a.txt"),
+            "/c/temp",
+            "Directory should be the same as the project directory using linux path"
+        );
+    });
+
     test("Dir exists", () => {
         assert.strictEqual(
             DiskFunctions.dirExists(dirProject),
@@ -46,14 +64,14 @@ suite("DiskFunction file or directory exists", () => {
 });
 
 suite("DiskFunction Write to and delete file", () => {
-    
-    let testFile=path.join(dirProject, "test-file.txt");
+
+    let testFile = path.join(dirProject, "test-file.txt");
     const contentToSave = "hello world\nand another line.·\n";
 
-    console.log(`Writing and reading file ${testFile}`);    
+    console.log(`Writing and reading file ${testFile}`);
     test("Removing file if it exists", () => {
         if (DiskFunctions.fileExists(testFile)) {
-                assert.strictEqual(
+            assert.strictEqual(
                 DiskFunctions.deleteFile(testFile),
                 true,
                 "File deletion should have succeeded."
@@ -69,7 +87,7 @@ suite("DiskFunction Write to and delete file", () => {
     });
 
     test("Read file content", () => {
-        const content:String|null = DiskFunctions.readFromFile(testFile);
+        const content: String | null = DiskFunctions.readFromFile(testFile);
         assert.strictEqual(
             content,
             contentToSave,
@@ -77,7 +95,7 @@ suite("DiskFunction Write to and delete file", () => {
         );
     });
     test("Deleting file", () => {
-        
+
         assert.strictEqual(
             DiskFunctions.deleteFile(testFile),
             true,

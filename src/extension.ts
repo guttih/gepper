@@ -19,7 +19,7 @@ let editorMenuHandler: MenuEditorHandler = new MenuEditorHandler();
 
 export function activate(context: ExtensionContext) {
 
-    window.showInformationMessage("Activating  gepper");
+    // window.showInformationMessage("Activating  gepper");
     let outputChannel: OutputChannel | null = null;
 
     let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {

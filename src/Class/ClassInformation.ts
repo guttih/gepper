@@ -1,4 +1,4 @@
-import { Position, Range, Selection, TextDocument, TextLine } from "vscode";
+import {  Position, Range, Selection, TextDocument } from "vscode";
 import { ClassFunctionSpecifiers } from "./ClassTypes";
 
 export interface Pos {
@@ -6,7 +6,145 @@ export interface Pos {
     end: number;
 }
 
+export interface CountPosition {
+    position: Position;
+    count: number;
+}
+
 export class ClassInformation {
+    static isInsideClassLine(document: TextDocument, selection: Selection | undefined): boolean {
+
+        if (selection === undefined || !ClassInformation.isInsideAComment(document, selection.start)) {
+            return false;
+        }
+
+        let line = document.lineAt(selection.start.line);
+        if (line.text.trim().startsWith("class")) {
+            return true;
+        }
+        if (line.text.trim().startsWith("struct")) {
+            return true;
+        }
+        return false;
+    }
+    static isInsideAComment(document: TextDocument, position: Position) {
+
+        return ClassInformation.isPositionWithinAnyRange(ClassInformation.getCommentRanges(document), position);
+    }
+
+    static getCommentRanges(document: TextDocument): Range[] {
+
+        const commentRanges: Range[] = [];
+        const commentRegex = /(\/\*[\s\S]*?\*\/)|(\/\/).*/g;
+      
+        const code = document.getText();
+        let match;
+        const rangeTexts: string[] = [];
+        while ((match = commentRegex.exec(code))) {
+          const commentStartIndex = match.index;
+          const commentEndIndex = commentRegex.lastIndex;
+          const commentStart = document.positionAt(commentStartIndex);
+          const commentEnd = document.positionAt(commentEndIndex);
+          const commentRange = new Range(commentStart, commentEnd);
+          commentRanges.push(commentRange);
+          
+          rangeTexts.push(code.substring(commentStartIndex, commentEndIndex));
+        }
+      
+        return commentRanges;
+
+    }
+
+    static isPositionWithinAnyRange(ranges: Range[], position: Position): boolean {
+        
+        return ranges.some((range) => range.contains(position));
+    }
+
+    static selectFirstClassInFile(document: TextDocument | undefined): Selection | undefined {
+        if (document === undefined) {
+            return undefined;
+        }
+
+        const classRegex = /class\s+(\w+)/g;
+        const docText = document.getText();
+        let classMatch = classRegex.exec(docText);
+        if (classMatch === null) {
+            return undefined;
+        }
+        const comments: Range[] = ClassInformation.getCommentRanges(document);
+        while ((classMatch) !== null) {
+            const className = classMatch[1];
+            const classDeclarationPosition = document.positionAt(classMatch.index);
+
+            // check if match is inside comment
+            if (!ClassInformation.isPositionWithinAnyRange(comments, classDeclarationPosition)) {
+                // Now we will need to search for the end of the class by:
+                // - while finding the "{" after the class declaration and it is inside a comment, string or regex we will search for the next "{"
+                // - while finding the closing "}" after the "{" we are using, and it is inside a comment, string or regex we will search for the next "}"
+                // - Create a selection starting from the beginning of the class decleration line and ending at the closing "}"
+                // - return the selection
+
+                // find the next "{" after the class declaration and while it is inside a comment, string or regex we will search for the next "{"
+
+                const openBraceRegex = /\{/g;
+                openBraceRegex.lastIndex = document.offsetAt(classDeclarationPosition);
+                let openBraceMatch = openBraceRegex.exec(docText);
+                while (openBraceMatch !== null && ClassInformation.isPositionWithinAnyRange(comments, document.positionAt(openBraceMatch.index))) {
+                    openBraceMatch = openBraceRegex.exec(docText);
+                }
+                
+                if (openBraceMatch === null) {
+                    return undefined;
+                }
+                
+                
+                // while openCount > 0 we will search for the next "{" or "}" and increment or decrement the openCount
+                
+                const closeBraceRegex = /\}/g;
+                closeBraceRegex.lastIndex = openBraceRegex.lastIndex;
+                let closeBraceMatch = closeBraceRegex.exec(docText);
+                if (closeBraceMatch === null) {
+                    return undefined;
+                }
+                
+                
+                let openBlocks = 1;
+                while (openBlocks > 0 && closeBraceMatch !== null && openBraceMatch !== null) {
+
+                    // find th next valid closing brace
+                    while (closeBraceMatch !== null && ClassInformation.isPositionWithinAnyRange(comments, document.positionAt(closeBraceMatch.index))) {
+                        closeBraceMatch = openBraceRegex.exec(docText);
+                    }
+
+                    if (closeBraceMatch !== null) {
+                        // we found a closing brace that is not inside a comment, string or regex
+                        if (openBraceMatch.index < closeBraceMatch.index) {
+                            // We are opening a new block
+                            openBlocks++;
+                            closeBraceMatch.index = openBraceMatch.index;
+                            while (openBraceMatch !== null && ClassInformation.isPositionWithinAnyRange(comments, document.positionAt(openBraceMatch.index))) {
+                                openBraceMatch = openBraceRegex.exec(docText);
+                            }
+                        }
+                        else {
+                            // We are closing a block
+                            openBlocks--;
+                        }
+                    }
+
+                }
+                if (openBlocks === 0 && closeBraceMatch !== null) {
+                    const classEndPosition = document.positionAt(closeBraceMatch.index);
+                    return new Selection(classDeclarationPosition, classEndPosition);
+                }
+            }
+            // find the next class after the current match
+            classMatch = classRegex.exec(docText);
+        }
+        return undefined;
+    }
+
+
     name: string | null = null;
     body: string | null = null;
     cppBody: string | null = null;
@@ -262,37 +400,6 @@ export class ClassInformation {
         }
     }
 
-    /**
-     * Searches for the first class declaration in a document and returns a selection where
-     * start and end position of that class is selected.
-     * @param document Document to search
-     * @returns Start and end position of the first class declaration
-     */
-    static selectFirstClassDeclaration(document: TextDocument | undefined): Selection | undefined {
-        if (!document) {
-            return undefined;
-        }
-        let line: TextLine;
-        let name, text;
-        for (let i = 0; i < document.lineCount; i++) {
-            line = document.lineAt(i);
-            text = ClassInformation.removeWhiteSpacesFromText(line.text, true, false).trimStart();
-
-            let index = text.indexOf("class ");
-            if (index > -1) {
-                //we found a class lets return this selection
-                name = text.substring(index + 6);
-                index = name.indexOf(" ");
-                if (index > -1) {
-                    name = name.substring(0, index);
-                }
-                //let's create a selection an return it
-                let selRet = new Selection(new Position(i, 0), new Position(i, 0));
-                return selRet;
-            }
-        }
-        return undefined;
-    }
     isValid() {
         return this.name !== null && this.body !== null;
     }

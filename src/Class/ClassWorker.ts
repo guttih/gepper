@@ -146,7 +146,7 @@ export class ClassWorker {
         if (this.isInsideClassLine(headerFile, selection)) {
             info = new ClassInformation(headerFile, selection);
         } else {
-            info = new ClassInformation(headerFile, ClassInformation.selectFirstClassDeclaration(window.activeTextEditor?.document));
+            info = new ClassInformation(headerFile, ClassInformation.selectFirstClassInFile(window.activeTextEditor?.document));
         }
 
         return info;
@@ -156,15 +156,19 @@ export class ClassWorker {
         if (!document || !selection) {
             return false;
         }
-        let selectedLineIndex = selection.active.line < selection.anchor.line ? selection.active.line : selection.anchor.line;
+        let selectedLinePos = selection.active.line < selection.anchor.line ? selection.active : selection.anchor;
+
         // editor.selection.isEmpty
-        let selectedLine = document.lineAt(selectedLineIndex);
+        let selectedLine = document.lineAt(selectedLinePos.line);
+        if ( ClassInformation.isInsideAComment(document, selectedLinePos) ) {
+            return false;
+        }
         let current: string = selectedLine.text.replace(/\s/g, " ").trim();
-        const i = current.indexOf("class ");
-        return i > -1;
+        const i = current.indexOf("class "); 
+        return i > -1;   
     }
     static selectFirstClassDeclaration(document: TextDocument | undefined): Selection | undefined {
-        return ClassInformation.selectFirstClassDeclaration(document);
+        return ClassInformation.selectFirstClassInFile(document);
     }
     static findImplementationFile(className: string | null, fileName: string | undefined): TextDocument | string | null {
         if (!className || !fileName) {

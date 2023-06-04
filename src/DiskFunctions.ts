@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 
 export class DiskFunctions {
     static readFromFile(file: string): String | null {
@@ -28,17 +29,9 @@ export class DiskFunctions {
      * @param path path to a file (must include a directory / or \\ )
      * @returns if path not found an empty string is returned
      */
-    static getDirectoryFromFilePath(path: string): string {
-        let pos = path.lastIndexOf("/");
-        if (pos < 0) {
-            pos = path.lastIndexOf("\\");
-        }
-        if (pos < 0) {
-            return "";
-        }
-
-        return path.substring(0, pos);
-    }
+    static getDirectoryFromFilePath(filePath: string): string {
+        return path.dirname(filePath);
+      }
     static createDirectory(dir: string, createPathRecursively: boolean = false): Boolean {
         try {
             if (!DiskFunctions.dirExists(dir)) {
