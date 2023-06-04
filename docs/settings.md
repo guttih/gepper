@@ -110,24 +110,34 @@ Here are examples of possible values using functional tokens.
 ```
 #ifndef {{__CLASS_NAME_UPPER__}}_H
 #define {{__CLASS_NAME_UPPER__}}_H
+
+
 class {{__CLASS_NAME__}}
 {
+
 public:
     {{__CLASS_NAME__}}();
     ~{{__CLASS_NAME__}}();
+
 private:
+
 };
+
 #endif
 ```
 
 ### Class Implementation Template (.cpp)
 ```
 #include "{{__HEADER_FILE_NAME__}}"
+
 {{__CLASS_NAME__}}::{{__CLASS_NAME__}}()
 {
+
 }
+
 {{__CLASS_NAME__}}::~{{__CLASS_NAME__}}()
 {
+
 }
 ```
 
