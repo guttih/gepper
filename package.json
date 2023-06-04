@@ -193,6 +193,7 @@
         "test": "node ./out/test/runTest.js",
         "prepare": "node ./src/tools/preparePublish.js",
         "bump": "node ./src/tools/preparePublish.js -bump",
+        "publish": "vsce publish",
         "install": "./src/tools/packageTest.sh -install",
         "uninstall": "./src/tools/packageTest.sh -uninstall"
     },
