@@ -101,6 +101,7 @@ export class ClassWorker {
         } else {
             doc = implementationDocOrPath;
         }
+
         info.setImplementation(doc);
         let headFuncs = info.getHeaderFunctions(true);
         let implFuncs = info.getImplementedFunctions();
@@ -160,12 +161,15 @@ export class ClassWorker {
 
         // editor.selection.isEmpty
         let selectedLine = document.lineAt(selectedLinePos.line);
-        if ( ClassInformation.isInsideAComment(document, selectedLinePos) ) {
-            return false;
-        }
         let current: string = selectedLine.text.replace(/\s/g, " ").trim();
         const i = current.indexOf("class "); 
-        return i > -1;   
+        if (i > -1) {
+            const iOrg = selectedLine.text.indexOf("class");
+            if ( !ClassInformation.isInsideCommentOrString(document, new Position(selectedLinePos.line, iOrg+1))) {
+                return true;
+            }
+        }
+        return false;
     }
     static selectFirstClassDeclaration(document: TextDocument | undefined): Selection | undefined {
         return ClassInformation.selectFirstClassInFile(document);

@@ -1,4 +1,4 @@
-import {  Position, Range, Selection, TextDocument } from "vscode";
+import { Position, Range, Selection, TextDocument } from "vscode";
 import { ClassFunctionSpecifiers } from "./ClassTypes";
 
 export interface Pos {
@@ -12,14 +12,25 @@ export interface CountPosition {
 }
 
 export class ClassInformation {
+
+    
+    name: string | null = null;
+    body: string | null = null;
+    cppBody: string | null = null;
+
+    constructor(document: TextDocument | undefined, selection: Selection | undefined) {
+        this.extractNameAndBody(document, selection);
+    }
+    
     static isInsideClassLine(document: TextDocument, selection: Selection | undefined): boolean {
 
-        if (selection === undefined || !ClassInformation.isInsideAComment(document, selection.start)) {
+        if (selection === undefined || !ClassInformation.isInsideCommentOrString(document, selection.start)) {
             return false;
         }
 
         let line = document.lineAt(selection.start.line);
         if (line.text.trim().startsWith("class")) {
+            
             return true;
         }
         if (line.text.trim().startsWith("struct")) {
@@ -27,32 +38,47 @@ export class ClassInformation {
         }
         return false;
     }
-    static isInsideAComment(document: TextDocument, position: Position) {
 
-        return ClassInformation.isPositionWithinAnyRange(ClassInformation.getCommentRanges(document), position);
+    static isInsideCommentOrString(document: TextDocument, position: Position) {
+
+        return ClassInformation.isPositionWithinAnyRange(ClassInformation.getCommentRanges(document, true), position);
     }
 
-    static getCommentRanges(document: TextDocument): Range[] {
+    static getCommentRanges(document: TextDocument, includeStrings: Boolean): Range[] {
+
+        // find all comments
 
         const commentRanges: Range[] = [];
         const commentRegex = /(\/\*[\s\S]*?\*\/)|(\/\/).*/g;
-      
+
         const code = document.getText();
         let match;
         const rangeTexts: string[] = [];
         while ((match = commentRegex.exec(code))) {
-          const commentStartIndex = match.index;
-          const commentEndIndex = commentRegex.lastIndex;
-          const commentStart = document.positionAt(commentStartIndex);
-          const commentEnd = document.positionAt(commentEndIndex);
-          const commentRange = new Range(commentStart, commentEnd);
-          commentRanges.push(commentRange);
-          
-          rangeTexts.push(code.substring(commentStartIndex, commentEndIndex));
+            const commentStartIndex = match.index;
+            const commentEndIndex = commentRegex.lastIndex;
+            const commentStart = document.positionAt(commentStartIndex);
+            const commentEnd = document.positionAt(commentEndIndex);
+            const commentRange = new Range(commentStart, commentEnd);
+            commentRanges.push(commentRange);
+            rangeTexts.push(code.substring(commentStartIndex, commentEndIndex));
         }
-      
-        return commentRanges;
 
+        if (includeStrings) {
+            // find all strings not inside comments
+            const cppStringRegex = /\"(?:\\.|[\n\r]|[^\"\\\n\r])*\"|\'.*?\'/g;
+            let regexMatch;
+            while ((regexMatch = cppStringRegex.exec(code))) {
+
+                if (!ClassInformation.isPositionWithinAnyRange(commentRanges, document.positionAt(regexMatch.index))) {
+                    const addReg = new Range(document.positionAt(regexMatch.index), document.positionAt(regexMatch.index + regexMatch[0].length));
+                    commentRanges.push(addReg);
+                }
+            }
+
+        }
+        
+        return commentRanges;
     }
 
     static isPositionWithinAnyRange(ranges: Range[], position: Position): boolean {
@@ -71,7 +97,8 @@ export class ClassInformation {
         if (classMatch === null) {
             return undefined;
         }
-        const comments: Range[] = ClassInformation.getCommentRanges(document);
+        const comments: Range[] = ClassInformation.getCommentRanges(document, true);
+
         while ((classMatch) !== null) {
             const className = classMatch[1];
             const classDeclarationPosition = document.positionAt(classMatch.index);
@@ -92,22 +119,22 @@ export class ClassInformation {
                 while (openBraceMatch !== null && ClassInformation.isPositionWithinAnyRange(comments, document.positionAt(openBraceMatch.index))) {
                     openBraceMatch = openBraceRegex.exec(docText);
                 }
-                
+
                 if (openBraceMatch === null) {
                     return undefined;
                 }
-                
-                
+
+
                 // while openCount > 0 we will search for the next "{" or "}" and increment or decrement the openCount
-                
+
                 const closeBraceRegex = /\}/g;
                 closeBraceRegex.lastIndex = openBraceRegex.lastIndex;
                 let closeBraceMatch = closeBraceRegex.exec(docText);
                 if (closeBraceMatch === null) {
                     return undefined;
                 }
-                
-                
+
+
                 let openBlocks = 1;
                 while (openBlocks > 0 && closeBraceMatch !== null && openBraceMatch !== null) {
 
@@ -145,13 +172,6 @@ export class ClassInformation {
     }
 
 
-    name: string | null = null;
-    body: string | null = null;
-    cppBody: string | null = null;
-
-    constructor(document: TextDocument | undefined, selection: Selection | undefined) {
-        this.extractNameAndBody(document, selection);
-    }
 
     /**
      * Removes variable names from function declaration
@@ -296,7 +316,12 @@ export class ClassInformation {
                 text = tmp + ";" + text.substring(pos.end);
             }
         }
+
+        // Remove default variable values
+        text = text.replace(/=[^,)]+/g, '');
         text = ClassInformation.removeWhiteSpacesFromText(text, false, false);
+        
+        //remove default assignments
         let elements = text.split(";");
         elements = elements.map((e) => e.trim());
         let functions = elements.filter((e) => e.indexOf(")") > 0);
@@ -331,6 +356,9 @@ export class ClassInformation {
     }
 
     static removeWhiteSpacesFromText(text: string, removeComments: boolean, removeEndLines: boolean): string {
+
+        // TODO: can't below be simpified?
+
         //remove comments
         if (removeComments) {
             text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "");
@@ -346,6 +374,9 @@ export class ClassInformation {
         }
         //remove spaces around ':' and spaces inside '(' and ')'
         text = text.replace(/\s:|:\s/g, ":");
+
+        //remove all endlines between parentheses 
+        text = text.replace(/\(([^)]+)\)/g, (match) => match.replace(/\n/g, ''));
         text = text.replace(/\(\s/g, "(");
         text = text.replace(/\s\)/g, ")");
         return text;

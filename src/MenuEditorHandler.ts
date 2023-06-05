@@ -8,8 +8,9 @@ export class MenuEditorHandler {
     selectVisibleMenuItems(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined) {
         clearTimeout(this.handleMenuShow);
         this.handleMenuShow = setTimeout(() => {
-            this.displayMenuItemAddMissingImplementations(editor, document, selections);
-            this.displayAddOperators(editor, document, selections);
+            const show = this.isInsideClass(editor, document, selections);
+            this.displayMenuItemAddMissingImplementations(editor, document, selections, show);
+            this.displayAddOperators(editor, document, selections, show);
         }, 80);
     }
     isInsideClass(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined): boolean {
@@ -32,10 +33,10 @@ export class MenuEditorHandler {
         }
         return shouldShowMenu;
     }
-    displayMenuItemAddMissingImplementations(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined) {
-        if (!this.isInsideClass(editor, document, selections)) {
+    displayMenuItemAddMissingImplementations(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined, forceShow: boolean = false) {
+        let show = forceShow? true : this.isInsideClass(editor, document, selections);
+        if (show) {
             MenuCommon.enableMenuItem(MenuContext.showClassImplementMissingFunctions, false);
-            return;
         }
 
         ClassWorker.implementMissingClassFunctions(true, false).then((ret) => {
@@ -45,8 +46,9 @@ export class MenuEditorHandler {
             );
         });
     }
-    displayAddOperators(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined) {
-        let show = this.isInsideClass(editor, document, selections);
+
+    displayAddOperators(editor: TextEditor | null, document: TextDocument | null, selections: readonly Selection[] | undefined, forceShow: boolean) {
+        let show = forceShow? true : this.isInsideClass(editor, document, selections);
         MenuCommon.enableMenuItem(MenuContext.showClassAddOperators, show);
         //todo: detect if all operators have been implemented, and if so do not show this menuItem
     }

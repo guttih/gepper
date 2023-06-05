@@ -30,11 +30,6 @@
         "tern"
     ],
     "activationEvents": [
-        "onCommand:gepper.createClass",
-        "onCommand:gepper.createClassInFolder",
-        "onCommand:gepper.createCMakeProject",
-        "onCommand:gepper.addClassOperators",
-        "onCommand:gepper.classImplementMissingFunctions",
         "onLanguage:cpp"
     ],
     "main": "./dist/extension.js",
