@@ -77,8 +77,10 @@ export class ClassWorker {
     ): Promise<ClassDeclarationFunctions | null> {
         // //Make ClassInformation
         let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
-        if (!info.isValid()) {
-            window.showWarningMessage(`Could not parse class in file`);
+        if (!info.isValid() ) {
+            if (window.activeTextEditor?.document.languageId === "cpp" && window.activeTextEditor?.document.fileName.endsWith(".h")) {
+                window.showWarningMessage(`Could not parse class in file`);
+            }
             return null;
         }
         let missing = info.getHeaderFunctions(true);
@@ -88,7 +90,10 @@ export class ClassWorker {
 
         const implementationDocOrPath = ClassWorker.findImplementationFile(info.name, window.activeTextEditor?.document.fileName);
         if (implementationDocOrPath === null) {
-            window.showWarningMessage("Could not find a file to put the implementations to");
+                // There can be many reasons why we did not find an implementation file
+                // 1. The implementation file does not exist
+                // 2. This is not a class implementation file, just a random cpp file, so no warning please.  They are annoying.
+                //window.showWarningMessage("Could not find a file to put the implementations to");
             return null;
         }
         let doc: TextDocument;
@@ -154,7 +159,7 @@ export class ClassWorker {
     }
 
     static isInsideClassLine(document: TextDocument | undefined, selection: Selection | undefined): boolean {
-        if (!document || !selection) {
+        if (!document || !selection || document.languageId !== "cpp") {
             return false;
         }
         let selectedLinePos = selection.active.line < selection.anchor.line ? selection.active : selection.anchor;

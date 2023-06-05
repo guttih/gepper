@@ -2,6 +2,10 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.7]
+
+Removing annoying warnings
+
 ## [0.6.6]
 
 Fixing context menu items when right clicking inside a class header.
