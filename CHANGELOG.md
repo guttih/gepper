@@ -2,12 +2,13 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
-## [0.6.3]
+## [0.6.6]
 
 Fixing context menu items when right clicking inside a class header.
 Also handling now, if delectations of a class function has default values.
 
-  Fixed: 
+### Fixed
+
   - [#40](https://github.com/guttih/gepper/issues/40) - Global string in a headerfile with keyword class in it causes problems
   - [#41](https://github.com/guttih/gepper/issues/41) - Context menu item "Add operators to C++ class" showing to often
 
