@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -30,11 +30,6 @@
         "tern"
     ],
     "activationEvents": [
-        "onCommand:gepper.createClass",
-        "onCommand:gepper.createClassInFolder",
-        "onCommand:gepper.createCMakeProject",
-        "onCommand:gepper.addClassOperators",
-        "onCommand:gepper.classImplementMissingFunctions",
         "onLanguage:cpp"
     ],
     "main": "./dist/extension.js",
@@ -193,6 +188,7 @@
         "test": "node ./out/test/runTest.js",
         "prepare": "node ./src/tools/preparePublish.js",
         "bump": "node ./src/tools/preparePublish.js -bump",
+        "publish": "vsce publish",
         "install": "./src/tools/packageTest.sh -install",
         "uninstall": "./src/tools/packageTest.sh -uninstall"
     },
