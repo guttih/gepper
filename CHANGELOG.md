@@ -2,6 +2,12 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.8]
+
+### Adding
+
+  - [#44](https://github.com/guttih/gepper/issues/44) - Feature request: Would like task allowing me to remove all comments from a c++ file.
+
 ## [0.6.7]
 
 Removing annoying warnings
