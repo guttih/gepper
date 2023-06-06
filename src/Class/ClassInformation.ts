@@ -44,6 +44,19 @@ export class ClassInformation {
         return ClassInformation.isPositionWithinAnyRange(ClassInformation.getCommentRanges(document, true), position);
     }
 
+    static removeAllComments(document: TextDocument): string {
+        const commentRanges = ClassInformation.getCommentRanges(document, true);
+        let docText = document.getText();
+        let newText = "";
+        let lastIndex = 0;
+        for (const commentRange of commentRanges) {
+            newText += docText.substring(lastIndex, document.offsetAt(commentRange.start));
+            lastIndex = document.offsetAt(commentRange.end);
+        }
+        newText += docText.substring(lastIndex);
+        return newText;
+    }
+
     static getCommentRanges(document: TextDocument, includeStrings: Boolean): Range[] {
 
         // find all comments
@@ -64,7 +77,7 @@ export class ClassInformation {
             rangeTexts.push(code.substring(commentStartIndex, commentEndIndex));
         }
 
-        if (includeStrings) {
+        if (includeStrings === true) {
             // find all strings not inside comments
             const cppStringRegex = /\"(?:\\.|[\n\r]|[^\"\\\n\r])*\"|\'.*?\'/g;
             let regexMatch;

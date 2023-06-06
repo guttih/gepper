@@ -1,4 +1,4 @@
-import { window, TextDocument, Selection, workspace, ViewColumn, Position, QuickPickItem, TextLine } from "vscode";
+import { window, TextDocument, Selection, workspace, ViewColumn, Position, QuickPickItem, TextLine, Range } from "vscode";
 import { ClassAccess } from "./ClassTypes";
 import { ClassInformation } from "./ClassInformation";
 import * as path from "path";
@@ -26,6 +26,7 @@ interface PickItem {
 }
 
 export class ClassWorker {
+    
     /**
      *
      * @param funcs functions create implementations for
@@ -285,6 +286,43 @@ export class ClassWorker {
                 });
         });
     }
+    static async removeDocumentComments() {
+        // Lets start by declaring a simple promice that will return a Boolean
+        return new Promise<boolean>(async (resolve, rejects) => {
+            // Get the active document
+            let document = window.activeTextEditor?.document;
+            // Check if we have a valid document
+            if (!document) {
+                // We do not have a valid document, lets reject the promice
+                return rejects(false);
+            }
+            // Get the text from the document
+            let text = document.getText();
+            // Check if we have text
+            if (!text) {
+                // We do not have text, lets reject the promice
+                return rejects(false);
+            }
+            // Lets get the text without comments
+            const commentRanges = ClassInformation.getCommentRanges(document, false);
+
+            // Lets loop through the comment ranges
+            let noCommentText = "";
+            let lastRange = new Range(0, 0, 0, 0);
+            for (let i = 0; i < commentRanges.length; i++) {
+                noCommentText += document.getText(new Range(lastRange.end, commentRanges[i].start));
+                lastRange = commentRanges[i];
+            }
+            noCommentText += document.getText(new Range(lastRange.end, new Position(document.lineCount, 0)));
+            // Lets replace the text in the document with the text without comments
+            const editor = window.activeTextEditor;
+            const range = new Range(0, 0, document.lineCount, 0);
+            editor?.edit((editBuilder) => {
+                editBuilder.replace(range, noCommentText);
+            });
+    });
+}
+           
     static async addClassOperators(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, rejects) => {
             let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
