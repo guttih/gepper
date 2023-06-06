@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const cp = require("child_process");
 // Returns true if file exists otherwise it returns false.
 module.exports.fileExists = function fileExists(filePath) {
     try {
@@ -40,6 +41,8 @@ module.exports.bump = function bump(workspaceDir) {
     let filePackage = path.join(workspaceDir, "package.json"),
         filePackageLock = path.join(workspaceDir, "package-lock.json"),
         fileBugReport = path.join(workspaceDir, ".github/ISSUE_TEMPLATE/bug_report.yml");
+        fileChangeLog    = path.join(workspaceDir, "CHANGELOG.md");
+
 
     if (!module.exports.fileExists(filePackage) || !module.exports.fileExists(filePackageLock)) {
         console.error(`Files "package.json" and "package-lock.json" must be found in provided directory (${workspaceDir}).`);
@@ -77,6 +80,8 @@ module.exports.bump = function bump(workspaceDir) {
     } else {
         console.error("Unable find old version in bug_report.yml so, I cannot update it.\n  You must do it manually in file:"+fileBugReport);
     }
+
+    module.exports.bumpChangeLog(fileChangeLog, newVersion);
     
 
     return newVersion;
@@ -93,4 +98,16 @@ module.exports.isPositiveInteger = function isPositiveInteger(str, bTreatZeroAsP
     }
 
     return false;
+};
+
+module.exports.bumpChangeLog = function bumpChangeLog(file, newVersion) {
+    console.log(`  file ${file}  NewVersion ${newVersion}`);
+    let content = fs.readFileSync(file).toString();
+    const TOKEN_VERSION_SECTION=`\n\n## [${newVersion}]\n\n`;
+    const TOKEN_CONTENT_START = "All notable changes to the \"gepper\" extension will be documented in this file.";
+    const TOKEN_CONTENT_END = "## [";
+    let newText = `${TOKEN_VERSION_SECTION}### Fixed\n\n  - [#??](https://github.com/guttih/gepper/issues/??) - TODO: Insert the issue number and title.\n\n`
+    newContent = module.exports.replaceContent(content, TOKEN_CONTENT_START, TOKEN_CONTENT_END, newText);
+    fs.writeFileSync(file, newContent);
+    cp.exec(file);
 };
