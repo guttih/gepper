@@ -96,6 +96,14 @@ export function activate(context: ExtensionContext) {
         }
     });
 
+    let fnRemoveDocumentComments = commands.registerCommand("gepper.removeDocumentComments", async (context) => {
+        if (context && context.document && context.document.languageId === "cpp") {
+            await ClassWorker.removeDocumentComments();
+        } else {
+            window.showErrorMessage(`Remove comments, only supports C++ files.\n\n --  Regards from Gepper.`);
+        }
+    });
+
     context.subscriptions.push(
         fnCreateClass,
         fnCreateClassInFolder,
@@ -105,7 +113,8 @@ export function activate(context: ExtensionContext) {
         fnClassImplementMissingFunctions,
         fnOnDidChangeTextDocument,
         fnOnDidChangeTextEditorSelection,
-        fnOnDidChangeActiveTextEditor
+        fnOnDidChangeActiveTextEditor,
+        fnRemoveDocumentComments
     );
 
     //Run the menu check, at extension activation.

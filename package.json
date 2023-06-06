@@ -57,6 +57,11 @@
             {
                 "command": "gepper.classImplementMissingFunctions",
                 "title": "Implement missing class functions"
+            },
+            {
+                "command": "gepper.removeDocumentComments",
+                "title": "Remove all comments from a C++ file",
+                "category": "cpp"
             }
         ],
         "snippets": [
