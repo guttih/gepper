@@ -67,7 +67,7 @@ body:
   id: version
   attributes:
     label: Version - Gepper Extension
-    description:  In VS Code select "View" > "Extensions", then type sheller and select the matching version here
+    description:  In VS Code select "View" > "Extensions", then type gepper and select the matching version here
     options:
       - 0.6.*
       - 0.6.8
