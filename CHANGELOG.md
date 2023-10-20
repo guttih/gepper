@@ -2,6 +2,17 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.9]
+
+### Fixed
+
+  - [#46](https://github.com/guttih/gepper/issues/46) - Want to be able to select adoc text and convert it to md.
+    * Added commands:
+      * Simple convert of selected AsciiDoc text to Git issue.\nConverting US### links to git issue links
+      * Converts selected AsciiDoc User Story document to git issue.  ( Supports ID link format: <<US###>> )
+    * Added above commands also, to context menu inside editor, when adoc is open in editor and some text is selected.
+
+
 ## [0.6.8]
 
 ### Adding
