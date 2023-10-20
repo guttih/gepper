@@ -3,7 +3,7 @@
     "displayName": "Gepper C++ helper",
     "description": "My cpp helper commands and snippets",
     "publisher": "guttih",
-    "version": "0.6.8",
+    "version": "0.6.9",
     "author": "Gudjon Holm Sigurdsson",
     "icon": "gepper.png",
     "repository": {
@@ -62,6 +62,22 @@
                 "command": "gepper.removeDocumentComments",
                 "title": "Remove all comments from a C++ file",
                 "category": "cpp"
+            },
+            {
+                "command": "gepper.gepperMessage",
+                "title": "Sheller message"
+            },
+            {
+                "command": "gepper.selTextAsciiDocToMarkdown",
+                "title": "Simple convert of selected AsciiDoc text to Git issue.\nConverting US### links to git issue links",
+                "category": "AsciiDoc",
+                "when": "editorTextFocus && editorLangId == 'asciidoc' && editorHasSelection"
+            },
+            {
+                "command": "gepper.selTextUserStoryToIssues",
+                "title": "Converts selected AsciiDoc User Story document to git issue.  ( Supports ID link format: <<US###>> )",
+                "category": "gepper",
+                "when": "editorHasSelection && editorLangId == 'asciidoc'"
             }
         ],
         "snippets": [
@@ -97,6 +113,18 @@
                 {
                     "command": "gepper.addClassOperators",
                     "when": "gepper.showClassAddOperators"
+                },
+                {
+                    "command": "gepper.selTextAsciiDocToMarkdown",
+                    "category": "gepper",
+                    "group": "AsciiDoc",
+                    "when": "editorTextFocus && editorLangId == 'asciidoc' && editorHasSelection"
+                },
+                {
+                    "command": "gepper.selTextUserStoryToIssues",
+                    "category": "gepper",
+                    "group": "AsciiDoc",
+                    "when": "editorHasSelection && editorLangId == 'asciidoc'"
                 }
             ]
         },
@@ -118,6 +146,13 @@
                     ".cpp",
                     ".hpp",
                     ".cc"
+                ]
+            },
+            {
+                "id": "asciidoc",
+                "extensions": [
+                    ".adoc",
+                    ".asciidoc"
                 ]
             },
             {
