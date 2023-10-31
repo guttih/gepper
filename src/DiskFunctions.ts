@@ -2,6 +2,35 @@ import * as fs from "fs";
 import * as path from "path";
 
 export class DiskFunctions {
+    static getBaseName(fsPath: string): string {
+       return  path.basename(fsPath);
+    }
+    /**
+     * Fix a path for windows, if unable or no need to fix the path is returned unchanged.
+     *
+     * @static
+     * @param {string} path
+     * @returns {string} path.
+     * @memberof DiskFunctions
+     */
+    static fixWindowsPath(path: string | undefined): string | undefined {
+        if (path === undefined) {
+            return undefined;
+        }
+        let inPath = path;
+        if (!DiskFunctions.dirExists(inPath) && process.platform === "win32") {
+            if (inPath.indexOf("/") == 0) {
+                if (inPath.indexOf(":/") === 2) {
+                    //remove first '/' then replace all '/' with '\\'
+                    inPath = inPath.substring(1).replace(/\//g, "\\");
+                } else if (inPath.charAt(2) === "/") {
+                    //remove first '/', then insert ':' after first char, then replace all '/' with '\\'
+                    inPath = inPath[1] + ":" + inPath.substring(2).replace(/\//g, "\\");
+                }
+            }
+        }
+        return inPath;
+    }
     static readFromFile(file: string): String | null {
         try {
             return fs.readFileSync(file).toString();
@@ -21,7 +50,7 @@ export class DiskFunctions {
         try {
             return fs.statSync(file).isDirectory();
         } catch (err) {
-            return false; 
+            return false;
         }
     }
     /**
@@ -31,7 +60,7 @@ export class DiskFunctions {
      */
     static getDirectoryFromFilePath(filePath: string): string {
         return path.dirname(filePath);
-      }
+    }
     static createDirectory(dir: string, createPathRecursively: boolean = false): Boolean {
         try {
             if (!DiskFunctions.dirExists(dir)) {

@@ -87,6 +87,8 @@ In this example we use 1.0.0 as the example version number, you will need to bum
     1. `vsce login guttih` and press `y`and return and paste then newly created PAT
     2. `vsce publish` This should publish an update to your extension.
 
+    Here is a path to the [Portal](https://portal.azure.com/#home)
+
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.

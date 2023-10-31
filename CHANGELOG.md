@@ -2,6 +2,12 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.10]
+
+### Fixed
+
+  - Resolved an issue where selecting *Create new C++ Class here* via right-click on a folder in workspace did not function as expected on Windows. This issue has now been rectified.
+
 ## [0.6.9]
 
 ### Fixed

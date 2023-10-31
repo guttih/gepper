@@ -116,8 +116,8 @@ export class ClassCreator {
     getHeaderFileName(includePath: Boolean = false) {
         let template = this.getRawHeaderFileName();
         let fileNameHeader = template ? this.replaceFunctionalTokens(template) : `${this.#_name}.h`;
-
-        return includePath ? `${this.#_dir}/${fileNameHeader}` : fileNameHeader;
+        let dir = this.#_dir;
+        return includePath ? `${dir}/${fileNameHeader}` : fileNameHeader;
     }
 
     /**
@@ -180,20 +180,24 @@ export class ClassCreator {
     }
 
     #init(className: string, dir?: string) {
+        let inDir = DiskFunctions.fixWindowsPath(dir);
+        const workDir = DiskFunctions.fixWindowsPath(vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath);
         this.#_dir =
-            dir || vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") || vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
-        if (this.#_dir && this.#_dir.length > 0 && vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath) {
+            inDir || vscode.workspace.getConfiguration().get<string>("cpp.gepper.classPath") || workDir;
+        if (this.#_dir && this.#_dir.length > 0 && workDir) {
             //Make relative path
-            let workDir = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
-            let dir = this.#_dir;
-            if (platform === "win32") {
-                if (dir.length === 1 || (dir.length > 1 && dir[1] !== ":")) {
-                    this.#_dir = path.join(workDir, dir);
-                }
-            } else {
-                //linux
-                if (dir[0] !== "/") {
-                    this.#_dir = path.join(workDir, dir);
+            if (!this.#_dir.startsWith(workDir)) {
+                let dir = this.#_dir;
+                if (platform === "win32") {
+                    if (dir.length === 1 || (dir.length > 1 && dir[1] !== ":")) {
+                        this.#_dir = path.join(workDir, dir);
+                    }
+                    this.#_dir = inDir;
+                } else {
+                    //linux
+                    if (dir[0] !== "/") {
+                        this.#_dir = path.join(workDir, dir);
+                    }
                 }
             }
         }

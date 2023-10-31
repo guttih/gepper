@@ -55,11 +55,26 @@ export function activate(context: ExtensionContext) {
         ClassWorker.createNewClass(className);
     });
 
+    let getLastDirIfCapCased = (path: string | undefined): string => {
+        if (!path) {
+            return "";
+        }
+
+        let word = DiskFunctions.getBaseName(path);
+
+        return word.charAt(0).toUpperCase() === word.charAt(0) ? word : "";
+    };
+
     let fnCreateClassInFolder = commands.registerCommand("gepper.createClassInFolder", async (context) => {
+        
+        let value = getLastDirIfCapCased(context.fsPath) || "ClassName";
+        let prompt = `Create a class saved in files ${value}.h and ${value}.cpp`;
+        
         let className: string | undefined = await window.showInputBox({
             title: "What is the name of your class",
             placeHolder: "ClassName",
-            prompt: "Creates a class saved in ClassName.h and ClassName.cpp",
+            prompt: prompt,
+            value: value,
         });
 
         ClassWorker.createNewClass(className, context.path);
