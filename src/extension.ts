@@ -19,9 +19,8 @@ let editorMenuHandler: MenuEditorHandler = new MenuEditorHandler();
 export function activate(context: ExtensionContext) {
     // window.showInformationMessage("Activating  gepper");
     let outputChannel: OutputChannel | null = null;
-
     let onSaveCppFile = workspace.onDidSaveTextDocument((document: TextDocument) => {
-        if (document.languageId === "cpp") {
+        if (document.languageId === "c" || document.languageId === "cpp") {
             const configPropertyPath = "cpp.gepper.shellExecute.OnSave.Command";
             const cmd = workspace.getConfiguration().get<string>(configPropertyPath);
             if (cmd) {
@@ -39,7 +38,7 @@ export function activate(context: ExtensionContext) {
         editorMenuHandler.selectVisibleMenuItems(editor ? editor : null, null, undefined);
     });
     let fnOnDidChangeTextEditorSelection = window.onDidChangeTextEditorSelection((e: TextEditorSelectionChangeEvent) => {
-        editorMenuHandler.selectVisibleMenuItems(e.textEditor, null, undefined);
+         editorMenuHandler.selectVisibleMenuItems(e.textEditor, null, undefined);
     });
     let fnOnDidChangeTextDocument = workspace.onDidChangeTextDocument((e: TextDocumentChangeEvent) => {
         editorMenuHandler.selectVisibleMenuItems(null, e.document, undefined);
@@ -109,7 +108,7 @@ export function activate(context: ExtensionContext) {
     });
 
     let fnRemoveDocumentComments = commands.registerCommand("gepper.removeDocumentComments", async (context) => {
-        if (context && context.document && context.document.languageId === "cpp") {
+        if (context && context.document && (context.document.languageId === "c" || context.document.languageId === "cpp")) {
             await ClassWorker.removeDocumentComments();
         } else {
             window.showErrorMessage(`Remove comments, only supports C++ files.\n\n --  Regards from Gepper.`);

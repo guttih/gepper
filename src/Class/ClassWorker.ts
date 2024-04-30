@@ -79,7 +79,8 @@ export class ClassWorker {
         // //Make ClassInformation
         let info: ClassInformation = ClassWorker.getClassInformationFromActiveDocument();
         if (!info.isValid() ) {
-            if (window.activeTextEditor?.document.languageId === "cpp" && window.activeTextEditor?.document.fileName.endsWith(".h")) {
+            if (    (   window.activeTextEditor?.document.languageId === "c" || window.activeTextEditor?.document.languageId === "cpp" )  && 
+                    window.activeTextEditor?.document.fileName.endsWith(".h")) {
                 window.showWarningMessage(`Could not parse class in file`);
             }
             return null;

@@ -2,6 +2,12 @@
 
 All notable changes to the "gepper" extension will be documented in this file.
 
+## [0.6.11]
+
+### Fixed
+
+  - [#49](https://github.com/guttih/gepper/issues/#49) - Sometimes on save command will not run when a .h file is being saved.
+    * Checking if file has languageId `c` or `cpp` instead of only checking for `cpp` languageId.
 ## [0.6.10]
 
 ### Fixed
